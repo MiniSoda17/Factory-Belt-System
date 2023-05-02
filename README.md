@@ -1,2 +1,2 @@
-# Production-Factory-Belt-System
+# Production-Factory
 A java program which replicates a factory line
