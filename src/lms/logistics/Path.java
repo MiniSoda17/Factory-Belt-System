@@ -88,7 +88,8 @@ public class Path {
     }
 
     /**
-     *  */ 
+     *  
+     */ 
     public void previous(Path path) {
         /** Something idk */
     }
@@ -100,10 +101,13 @@ public class Path {
         return this.next;
     }
 
-
-
-
-
+    /**
+     * 
+     * @param path
+     */
+    public void next(Path path) {
+        //** Something as well */
+    }
 
     /**
      * This method takes a Transport Consumer,
