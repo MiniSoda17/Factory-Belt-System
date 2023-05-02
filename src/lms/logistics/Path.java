@@ -130,4 +130,20 @@ public class Path {
             path = path.previous;
         } while (path != null);
     }
+
+    /**
+     * 
+     */
+    public String toString() {
+        return "test";
+    }
+
+    /**
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o) {
+        return true;
+    }
 }
