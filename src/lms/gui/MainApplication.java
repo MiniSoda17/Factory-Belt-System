@@ -13,6 +13,7 @@ import lms.logistics.container.Receiver;
 
 import javax.swing.JFrame;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -111,8 +112,9 @@ public class MainApplication {
 
         // System.out.println(receiverPath.toString());
         String fileName = "C:\\Users\\Lister Boys\\OneDrive\\Documents\\School\\University of Queensland\\UQ 2023\\CSSE2002\\Assignment 3\\Production-Factory-Belt-System\\saves\\grid1.txt";
-        Reader fileReader = new FileReader(fileName);
-        GameLoader.load(fileReader);
+        Reader bufferedReader = new BufferedReader(new FileReader(fileName));
+    
+        GameLoader.load(bufferedReader);
 
         /* This line can be used to short-cut args,
          * but you should actually use IntelliJ's
