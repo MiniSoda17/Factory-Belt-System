@@ -17,6 +17,29 @@ import java.util.Map;
  */
 public class GameGrid {
 
+    private int range;
+
+    private Map<Coordinate, GridComponent> grid = new HashMap<>();
+    /**
+     * 
+     * @param range
+     */
+    public GameGrid(int range) {
+        this.range = range;
+    }
+
+    public Map<Coordinate, GridComponent> getGrid() {
+        return grid;
+    }
+
+    public int getRange() {
+        return 5;
+    }
+
+    public void setCoorindate(Coordinate coordinate, GridComponent componenet) {
+        grid.put(coordinate, componenet);
+    }
+
     /**
      * Helper method:
      * Generates a grid with the given range, starting from the origin (the centre) and maintaining a

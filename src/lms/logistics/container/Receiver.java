@@ -115,5 +115,5 @@ public class Receiver extends Container {
         }
         super.setInventory(null);
     }
-
+    
 }

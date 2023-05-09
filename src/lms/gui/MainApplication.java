@@ -3,10 +3,21 @@ package lms.gui;
 import lms.exceptions.FileFormatException;
 import lms.io.GameLoader;
 import lms.grid.GameGrid;
+import lms.logistics.belts.Belt;
+import lms.logistics.container.Container;
+import lms.logistics.container.Producer;
+import lms.logistics.Item;
+import lms.logistics.Path;
+import lms.logistics.Transport;
+import lms.logistics.container.Receiver;
 
 import javax.swing.JFrame;
+
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.util.Random;
 
 /**
  * Main application class which starts the application and sets the root frame.
@@ -81,37 +92,55 @@ public class MainApplication {
     /**
      * Main method for the application.
      *
-     * @param args String array of command line arguments
+     * @param args String array of command line argument
+     * @throws FileFormatException
+     * @throws IOException
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, FileFormatException {
+        
+        // Item item = new Item("package");
+        // Transport producer = new Producer(1, item);
+        // Transport belt = new Belt(2);
+        // Transport receiver = new Receiver(3, item);
+        // Path producerPath = new Path(producer);
+        // Path receiverPath = new Path(receiver);
+
+        // Path beltPath = new Path(belt, producerPath, receiverPath);
+        // producerPath.next(beltPath);
+        // receiverPath.previous(beltPath);
+
+        // System.out.println(receiverPath.toString());
+        String fileName = "C:\\Users\\Lister Boys\\OneDrive\\Documents\\School\\University of Queensland\\UQ 2023\\CSSE2002\\Assignment 3\\Production-Factory-Belt-System\\saves\\grid1.txt";
+        Reader fileReader = new FileReader(fileName);
+        GameLoader.load(fileReader);
 
         /* This line can be used to short-cut args,
          * but you should actually use IntelliJ's
          * Debug Configurations to set the path as a command line argument. */
         //args = new String[]{"saves/grid1.txt"};
 
-        if (args.length != 1) {
-            System.err.println("Usage: save_file\n");
-            System.err.println("You did not specify the names of the required save file"
-                    + " from which to load.");
-            System.err.println("To do this, you need to add the command line "
-                    + "argument to your "
-                    + "program in IntelliJ.");
-            System.err.println("Go to \"Run > Edit Configurations\" \n"
-                    + "(If there is no configuration, "
-                    + "you will need to create a new Application configuration, "
-                    + "setting MainApplication as the Main class.)\n"
-                    + "Add the path to your file to the program arguments text box.\n");
-            System.err.println("Example: saves/grid1.txt");
-            System.exit(1);
-        }
-        try {
-            new MainApplication("Logistics Puzzle", 800, 700, args[0]);
-            // Width and height chosen with sufficient size to fit all example saves
-        } catch (FileFormatException e) {
-            System.err.println("File was incorrectly formatted");
-            e.printStackTrace();
-        }
+        // if (args.length != 1) {
+        //     System.err.println("Usage: save_file\n");
+        //     System.err.println("You did not specify the names of the required save file"
+        //             + " from which to load.");
+        //     System.err.println("To do this, you need to add the command line "
+        //             + "argument to your "
+        //             + "program in IntelliJ.");
+        //     System.err.println("Go to \"Run > Edit Configurations\" \n"
+        //             + "(If there is no configuration, "
+        //             + "you will need to create a new Application configuration, "
+        //             + "setting MainApplication as the Main class.)\n"
+        //             + "Add the path to your file to the program arguments text box.\n");
+        //     System.err.println("Example: saves/grid1.txt");
+        //     System.exit(1);
+        // }
+        // try {
+        //     new MainApplication("Logistics Puzzle", 800, 700, args[0]);
+        //     // Width and height chosen with sufficient size to fit all example saves
+        // } catch (FileFormatException e) {
+        //     System.err.println("File was incorrectly formatted");
+        //     e.printStackTrace();
+        // }
     }
 
 }

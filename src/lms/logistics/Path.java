@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
+
 /**
  * Maintains a doubly linked list to maintain the links for each node.
  * Has previous and next item.
@@ -14,20 +15,17 @@ import java.util.function.Consumer;
  */
 public class Path {
     /** */
-    public Path path;
-    /** */
     public Transport node;
     /** */
     public Path previous;
-    /** */
-    public Path next;
 
+    public Path next;
     /**
      * 
      * @param path
      */
     public Path(Path path) {
-        this.path = path;
+        this.node = path.node;
     }
 
     /**
@@ -40,6 +38,8 @@ public class Path {
             throw new IllegalArgumentException();
         }
         this.node = node;
+        this.previous = null;
+        this.next = null;
     }
 
     /**
@@ -50,7 +50,7 @@ public class Path {
      * @throws IllegalArgumentException
      */
     public Path(Transport node, Path previous, Path next) throws IllegalArgumentException {
-        this(node);
+        this.node = node;
         this.previous = previous;
         this.next = next;
     }
@@ -60,7 +60,11 @@ public class Path {
      * @return
      */
     public Path head() {
-        return this.path;
+        Path holder = this;
+        while(holder.previous() != null) {
+            holder = holder.previous();
+        }
+        return holder;
     }
 
     /**
@@ -76,7 +80,11 @@ public class Path {
      * @return
      */
     public Path tail() {
-        return this.path;
+        Path holder = this;
+        while (holder.next() != null) {
+            holder = holder.next();
+        }
+        return holder;
     }
 
     /**
@@ -91,7 +99,7 @@ public class Path {
      *  
      */ 
     public void previous(Path path) {
-        /** Something idk */
+        this.previous = path;
     }
 
     /**
@@ -106,7 +114,7 @@ public class Path {
      * @param path
      */
     public void next(Path path) {
-        //** Something as well */
+        this.next = path;
     }
 
     /**
@@ -135,7 +143,17 @@ public class Path {
      * 
      */
     public String toString() {
-        return "test";
+        Path head = this.head();
+
+        return String.format("START -> %sEND", this.finder(head));
+    }
+
+    private String finder(Path path) {
+        Path holder = path;
+        if (holder == null) {
+            return "";
+        }
+        return holder.getNode() + " -> " + this.finder(holder.next());
     }
 
     /**
@@ -144,6 +162,14 @@ public class Path {
      */
     @Override
     public boolean equals(Object o) {
-        return true;
+        if (o instanceof Path) {
+            Path path = (Path) o;
+            if (this.getNode() == path.getNode()) {
+                return true;
+            }
+
+        }
+        return false;
     }
+
 }

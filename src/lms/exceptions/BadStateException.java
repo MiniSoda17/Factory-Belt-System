@@ -1,16 +1,20 @@
 package lms.exceptions;
 
 public class BadStateException extends RuntimeException {
-    BadStateException() {
-        
-    }
-    BadStateException(String message) {
 
+    public BadStateException() {
+        super();
     }
-    BadStateException(String message, Throwable cause) {
 
+    public BadStateException(String message) {
+        super(message);
     }
-    BadStateException(Throwable cause) {
+
+    public BadStateException(String message, Throwable cause) {
+        super(message, cause);
+    }
+    public BadStateException(Throwable cause) {
+        super(cause);
 
     }
 
