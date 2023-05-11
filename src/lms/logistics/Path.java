@@ -25,7 +25,9 @@ public class Path {
      * @param path
      */
     public Path(Path path) {
-        this.node = path.node;
+        this.node = path.getNode();
+        this.previous = path.previous();
+        this.next = path.next();
     }
 
     /**
@@ -147,7 +149,7 @@ public class Path {
 
         return String.format("START -> %sEND", this.finder(head));
     }
-
+  
     private String finder(Path path) {
         Path holder = path;
         if (holder == null) {
