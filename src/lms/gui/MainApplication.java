@@ -2,6 +2,7 @@ package lms.gui;
 
 import lms.exceptions.FileFormatException;
 import lms.io.GameLoader;
+import lms.grid.Coordinate;
 import lms.grid.GameGrid;
 import lms.logistics.belts.Belt;
 import lms.logistics.container.Container;
@@ -111,15 +112,24 @@ public class MainApplication {
         // receiverPath.previous(beltPath);
 
         // System.out.println(receiverPath.toString());
+
+
         String fileName = "C:\\Users\\Lister Boys\\OneDrive\\Documents\\School\\University of Queensland\\UQ 2023\\CSSE2002\\Assignment 3\\Production-Factory-Belt-System\\saves\\grid1.txt";
         Reader bufferedReader = new BufferedReader(new FileReader(fileName));
     
         GameLoader.load(bufferedReader);
 
+
+        // GameGrid gameGrid = new GameGrid(1);
+        // Coordinate coordinate = new Coordinate(1, 1, 1);
+        // System.out.println(coordinate.getBottomLeft().toString());
+        
+
+
         /* This line can be used to short-cut args,
          * but you should actually use IntelliJ's
          * Debug Configurations to set the path as a command line argument. */
-        //args = new String[]{"saves/grid1.txt"};
+        // args = new String[]{"saves/grid1.txt"};
 
         // if (args.length != 1) {
         //     System.err.println("Usage: save_file\n");

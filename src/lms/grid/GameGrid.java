@@ -29,11 +29,13 @@ public class GameGrid {
     }
 
     public Map<Coordinate, GridComponent> getGrid() {
-        return grid;
+        this.generate(this.range);
+
+        return this.grid;
     }
 
     public int getRange() {
-        return 5;
+        return this.range;
     }
 
     public void setCoorindate(Coordinate coordinate, GridComponent componenet) {
