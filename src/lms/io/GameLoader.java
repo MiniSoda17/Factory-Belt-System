@@ -147,4 +147,9 @@ public class GameLoader {
         bufferedReader.close();
         return gameGrid;
     }
+
+    private HashMap <Integer, Integer> rowCalculator(int range) {
+        HashMap <Integer, Integer> row = new HashMap<>();
+        return row;
+    }
 }
