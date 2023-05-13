@@ -5,6 +5,7 @@ import lms.grid.GameGrid;
 import lms.grid.Coordinate;
 import lms.grid.GridComponent;
 import lms.logistics.Item;
+import lms.logistics.Path;
 import lms.logistics.Transport;
 import lms.logistics.belts.Belt;
 import lms.logistics.container.Producer;
@@ -39,12 +40,11 @@ public class GameLoader {
         Item producerKey = new Item(producerName);
         Item receiverKey = new Item(receiverName);
         String line;
-        HashMap <Integer, Transport> componentPosition = new HashMap<>();
+        HashMap <Integer, Path> componentPosition = new HashMap<>();
         BufferedReader bufferedReader = (BufferedReader) reader;
         int sectionCount = 1;
         String section = "";
         while ((line = bufferedReader.readLine()) != null) {
-            
             if (!(line.contains("_"))) {
                 if (sectionCount == 6) {
                     section += line + " ";
@@ -78,11 +78,14 @@ public class GameLoader {
                     section = section.replace(" ", "").replace("w", "").replace("o", "");
                     for (int count = 0; count < section.length(); count++) {
                         if (section.charAt(count) == 'p') {
-                            componentPosition.put(count + 1, new Producer(count + 1, producerKey));
+                            componentPosition.put(count + 1, new Path(new Producer(count + 1, producerKey)));
+                            // componentPosition.put(count + 1, new Producer(count + 1, producerKey));
                         } else if (section.charAt(count) == 'b') {
-                            componentPosition.put(count + 1, new Belt(count + 1));
+                            // componentPosition.put(count + 1, new Belt(count + 1));
+                            componentPosition.put(count + 1, new Path(new Belt(count + 1)));
                         } else if (section.charAt(count) == 'r') {
-                            componentPosition.put(count + 1, new Receiver(count + 1, receiverKey));
+                            // componentPosition.put(count + 1, new Receiver(count + 1, receiverKey));
+                            componentPosition.put(count + 1, new Path(new Receiver(count + 1, receiverKey)));
                         }
                     }
                 } 
@@ -91,25 +94,45 @@ public class GameLoader {
             }
         }
         
-        Transport start;
-        Transport end;
-        String middle = "";
-        Boolean startFound;
+        
+        // Coordinate coordinate = new Coordinate(0, 0, 0);
+        // Coordinate coordinate2 = coordinate.getLeft();
+        // Coordinate coordinate3 = coordinate2.getLeft();
+        
+        String connections = "";
+        HashMap <String, Path> paths = new HashMap<>();
         for (char character : section.toCharArray()) {
-            if (character != '-' && character != ' ' && character != ',') {
-                int id = Character.getNumericValue(character);
-                if (startFound = false) {
-                    start = componentPosition.get(id);
-                    startFound = true;
-                } else {
-                    end = componentPosition.get(id);
-                }
-            } else if (character == '-' || character == ',') {
-                middle += character;
+            
+            if (character != ' ') {
+                connections += character;
             } else {
-                
+                int startID = Character.getNumericValue(connections.charAt(0));
+                Path startPath = componentPosition.get(startID);
+                int endID = Character.getNumericValue(connections.charAt(connections.length() - 1));
+                Path endPath = componentPosition.get(endID);
+                Path middlePath;
+                if (connections.contains(",")) {
+                    
+                    if (connections.charAt(connections.indexOf("-") + 1) != ',') {
+                        middlePath = componentPosition.get(connections.indexOf("-") + 1);
+                        startPath.previous(middlePath);
+                        middlePath.next(startPath);
+                    } if (connections.charAt(connections.length() - 1) != ',') {
+                        endPath = componentPosition.get(Character.getNumericValue(connections.charAt(connections.length() - 1)));
+                        startPath.next(endPath);
+                        endPath.previous(startPath);
+                    }
+                } else if (startPath.getNode() instanceof Receiver) {
+                    startPath.previous(endPath);
+                    endPath.next(startPath);
+                } else {
+                    startPath.next(endPath);
+                    endPath.previous(startPath);
+                }
+                connections = "";
             }
         }
+        System.out.println(componentPosition);
         bufferedReader.close();
         return gameGrid;
     }

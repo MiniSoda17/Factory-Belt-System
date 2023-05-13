@@ -113,12 +113,10 @@ public class MainApplication {
 
         // System.out.println(receiverPath.toString());
 
-
         String fileName = "C:\\Users\\Lister Boys\\OneDrive\\Documents\\School\\University of Queensland\\UQ 2023\\CSSE2002\\Assignment 3\\Production-Factory-Belt-System\\saves\\grid1.txt";
         Reader bufferedReader = new BufferedReader(new FileReader(fileName));
     
         GameLoader.load(bufferedReader);
-
 
         // GameGrid gameGrid = new GameGrid(1);
         // Coordinate coordinate = new Coordinate(1, 1, 1);
