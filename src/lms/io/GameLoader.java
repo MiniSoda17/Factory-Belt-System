@@ -14,16 +14,14 @@ import lms.logistics.container.Receiver;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.io.BufferedReader;
 
 public class GameLoader {
     
     private static GameGrid gameGrid;
-
-    public GameLoader() {
-
-    }
 
     /**
      * @param reader
@@ -41,7 +39,6 @@ public class GameLoader {
         Item receiverKey = new Item(receiverName);
         String line;
         HashMap <Integer, Path> componentPosition = new HashMap<>();
-        HashMap <Path, Coordinate> componentCoordinate = new HashMap<>();
         String gridLayout = "";
         BufferedReader bufferedReader = (BufferedReader) reader;
         int sectionCount = 1;
@@ -56,6 +53,7 @@ public class GameLoader {
             } else {
                 if (sectionCount == 1) {
                     range = Integer.parseInt(section);
+                    
                     gameGrid = new GameGrid(range);
                 } else if (sectionCount == 2) {
                     producerCount = Character.getNumericValue(section.charAt(0));
@@ -77,7 +75,7 @@ public class GameLoader {
                         }
                     }
                 } else if (sectionCount == 5) {
-                    gridLayout = section;
+                    gridLayout = section.replace(" ", "");
                     section = section.replace(" ", "").replace("w", "").replace("o", "");
                     for (int count = 0; count < section.length(); count++) {
                         if (section.charAt(count) == 'p') {
@@ -94,7 +92,7 @@ public class GameLoader {
             }
         }
         String connections = "";
-        HashMap <String, Path> paths = new HashMap<>();
+        
         for (char character : section.toCharArray()) {
             if (character != ' ') {
                 connections += character;
@@ -132,24 +130,75 @@ public class GameLoader {
                 connections = "";
             }
         }
-        Coordinate coordinate = new Coordinate(0, 0, 0);
-        var entrySet = componentPosition.entrySet();
-        for (int count = 0; count < section.length(); count++) {
+        Coordinate origin = new Coordinate();
+        GridComponent gridComponent = () -> "";
+        Coordinate direction = origin;
+        List<Integer> elementsPerRow = rowCalculator(range);
+        boolean originFound = false;
+        int idCounter = 0;
+        int rowCounter = 0;
+        for (int count = 0; count < gridLayout.length(); count++) {
+            
             if (gridLayout.charAt(count) == 'w') {
-                GridComponent gridComponent = () -> "w";
-                System.out.println(gridComponent.getEncoding());
+                gridComponent = () -> "w";
+            } else if (gridLayout.charAt(count) == 'o') {
+                gridComponent = () -> "o";
+            } else if (gridLayout.charAt(count) != ' '){
+                idCounter ++;
+                gridComponent = componentPosition.get(idCounter).getNode();
             }
+            if (rowCounter % 2 == 0) {
+                if (elementsPerRow.get(rowCounter) != 0) {
+                    direction = direction.getRight();
+                } else {
+                    direction = direction.getBottomRight();
+                    rowCounter ++;
+                }
+            } else {
+                if (elementsPerRow.get(rowCounter) != 0) {
+                    direction = direction.getLeft();
+                } else {
+                    direction = direction.getBottomLeft();
+                    rowCounter ++;
+                }
+            } 
+            if (originFound == false) {
+                direction = origin;
+                originFound = true;
+            } 
+            // System.out.println(direction);
+            // System.out.println(gridComponent);
+            gameGrid.setCoordinate(direction, gridComponent);
+            elementsPerRow.set(rowCounter, elementsPerRow.get(rowCounter) - 1);
         }
-        for (var entry : entrySet) {
-            gameGrid.setCoorindate(coordinate, entry.getValue().getNode());
-        }
-        // System.out.println(componentPosition.get(3).getNode().getPath());
+
         bufferedReader.close();
+        // var entrySet = gameGrid.getGrid().entrySet();
+        // for (var entry : entrySet) {
+        //     System.out.println(entry.getKey());
+        //     System.out.println(entry.getValue());
+        // }
+        System.out.println(gameGrid.getGrid());
         return gameGrid;
     }
-
-    private HashMap <Integer, Integer> rowCalculator(int range) {
-        HashMap <Integer, Integer> row = new HashMap<>();
-        return row;
+    /**
+     * 
+     * @param range
+     * @return
+     */
+    private static ArrayList<Integer> rowCalculator(int range) {
+        ArrayList <Integer> elementsPerRow = new ArrayList<>();
+        int gridLength = range * 2 + 1;
+        int countPerRow = range;
+        int middleRow = range + 1;
+        for (int i = 0; i < gridLength; i++) {
+            if (i + 1 > middleRow) {
+                countPerRow--;
+            } else {
+                countPerRow++;
+            }
+            elementsPerRow.add(countPerRow);
+        }
+        return elementsPerRow;
     }
 }

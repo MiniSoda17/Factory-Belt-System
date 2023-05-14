@@ -3,6 +3,11 @@ package lms.grid;
 import java.util.HashMap;
 import java.util.Map;
 
+import lms.logistics.Item;
+import lms.logistics.Path;
+import lms.logistics.belts.Belt;
+import lms.logistics.container.Producer;
+
 /**
  * The GameGrid is responsible for managing the state and initialisation of the game's grid.
  * It provides the Map structure to hold the coordinates of each node in the grid. It also
@@ -29,16 +34,15 @@ public class GameGrid {
     }
 
     public Map<Coordinate, GridComponent> getGrid() {
-        this.generate(this.range);
-
-        return this.grid;
+        return this.generate(this.getRange());
+        
     }
 
     public int getRange() {
         return this.range;
     }
 
-    public void setCoorindate(Coordinate coordinate, GridComponent componenet) {
+    public void setCoordinate(Coordinate coordinate, GridComponent componenet) {
         grid.put(coordinate, componenet);
     }
 
@@ -50,16 +54,19 @@ public class GameGrid {
      * @param range The range of the map.
      * @provided
      */
-    private void generate(int range) {
+    private Map<Coordinate, GridComponent> generate(int range) {
+        Map<Coordinate, GridComponent> tempGrid = new HashMap<>();
         for (int q = -range; q <= range; q++) { // From negative to positive (inclusive)
             for (int r = -range; r <= range; r++) { // From negative to positive (inclusive)
                 for (int s = -range; s <= range; s++) { // From negative to positive (inclusive)
                     if (q + r + s == 0) {
                         // Useful to default to error
-                        grid.put(new Coordinate(q, r, s), () -> "ERROR");
+                        tempGrid.put(new Coordinate(q, r, s), () -> "ERROR");
+                        // tempGrid.put(new Coordinate(q, r, s), new Producer(5, new Item("hi")));
                     }
                 }
             }
         }
+        return tempGrid;
     }
 }

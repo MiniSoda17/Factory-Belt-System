@@ -63,7 +63,8 @@ public class MainApplication {
         try {
 
             /* Loads and initialises the gameGrid object from save file data */
-            gameGrid = GameLoader.load(new FileReader(save));
+            gameGrid = GameLoader.load(new BufferedReader(new FileReader(save)));
+            
         } catch (IOException e) {
             throw new FileFormatException(e);
         }
@@ -114,9 +115,10 @@ public class MainApplication {
         // System.out.println(receiverPath.toString());
 
         String fileName = "C:\\Users\\Lister Boys\\OneDrive\\Documents\\School\\University of Queensland\\UQ 2023\\CSSE2002\\Assignment 3\\Production-Factory-Belt-System\\saves\\grid1.txt";
-        Reader bufferedReader = new BufferedReader(new FileReader(fileName));
+        // Reader bufferedReader = new BufferedReader(new FileReader(fileName));
+        // // Reader bufferedReader = new FileReader(fileName);
     
-        GameLoader.load(bufferedReader);
+        // GameLoader.load(bufferedReader);
 
         // GameGrid gameGrid = new GameGrid(1);
         // Coordinate coordinate = new Coordinate(1, 1, 1);
@@ -127,30 +129,32 @@ public class MainApplication {
         /* This line can be used to short-cut args,
          * but you should actually use IntelliJ's
          * Debug Configurations to set the path as a command line argument. */
-        // args = new String[]{"saves/grid1.txt"};
 
-        // if (args.length != 1) {
-        //     System.err.println("Usage: save_file\n");
-        //     System.err.println("You did not specify the names of the required save file"
-        //             + " from which to load.");
-        //     System.err.println("To do this, you need to add the command line "
-        //             + "argument to your "
-        //             + "program in IntelliJ.");
-        //     System.err.println("Go to \"Run > Edit Configurations\" \n"
-        //             + "(If there is no configuration, "
-        //             + "you will need to create a new Application configuration, "
-        //             + "setting MainApplication as the Main class.)\n"
-        //             + "Add the path to your file to the program arguments text box.\n");
-        //     System.err.println("Example: saves/grid1.txt");
-        //     System.exit(1);
-        // }
-        // try {
-        //     new MainApplication("Logistics Puzzle", 800, 700, args[0]);
-        //     // Width and height chosen with sufficient size to fit all example saves
-        // } catch (FileFormatException e) {
-        //     System.err.println("File was incorrectly formatted");
-        //     e.printStackTrace();
-        // }
+        // // args = new String[]{"saves/grid1.txt"};
+        args = new String[]{fileName};
+
+        if (args.length != 1) {
+            System.err.println("Usage: save_file\n");
+            System.err.println("You did not specify the names of the required save file"
+                    + " from which to load.");
+            System.err.println("To do this, you need to add the command line "
+                    + "argument to your "
+                    + "program in IntelliJ.");
+            System.err.println("Go to \"Run > Edit Configurations\" \n"
+                    + "(If there is no configuration, "
+                    + "you will need to create a new Application configuration, "
+                    + "setting MainApplication as the Main class.)\n"
+                    + "Add the path to your file to the program arguments text box.\n");
+            System.err.println("Example: saves/grid1.txt");
+            System.exit(1);
+        }
+        try {
+            new MainApplication("Logistics Puzzle", 800, 700, args[0]);
+            // Width and height chosen with sufficient size to fit all example saves
+        } catch (FileFormatException e) {
+            System.err.println("File was incorrectly formatted");
+            e.printStackTrace();
+        }
     }
 
 }
