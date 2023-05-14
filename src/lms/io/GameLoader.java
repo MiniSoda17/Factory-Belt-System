@@ -137,50 +137,53 @@ public class GameLoader {
         boolean originFound = false;
         int idCounter = 0;
         int rowCounter = 0;
-        for (int count = 0; count < gridLayout.length(); count++) {
+        // for (int count = 0; count < gridLayout.length(); count++) {
             
-            if (gridLayout.charAt(count) == 'w') {
-                gridComponent = () -> "w";
-            } else if (gridLayout.charAt(count) == 'o') {
-                gridComponent = () -> "o";
-            } else if (gridLayout.charAt(count) != ' '){
-                idCounter ++;
-                gridComponent = componentPosition.get(idCounter).getNode();
-            }
-            if (rowCounter % 2 == 0) {
-                if (elementsPerRow.get(rowCounter) != 0) {
-                    direction = direction.getRight();
-                } else {
-                    direction = direction.getBottomRight();
-                    rowCounter ++;
-                }
-            } else {
-                if (elementsPerRow.get(rowCounter) != 0) {
-                    direction = direction.getLeft();
-                } else {
-                    direction = direction.getBottomLeft();
-                    rowCounter ++;
-                }
-            } 
-            if (originFound == false) {
-                direction = origin;
-                originFound = true;
-            } 
-            // System.out.println(direction);
-            // System.out.println(gridComponent);
-            gameGrid.setCoordinate(direction, gridComponent);
-            elementsPerRow.set(rowCounter, elementsPerRow.get(rowCounter) - 1);
-        }
-
+        //     if (gridLayout.charAt(count) == 'w') {
+        //         gridComponent = () -> "w";
+        //     } else if (gridLayout.charAt(count) == 'o') {
+        //         gridComponent = () -> "o";
+        //     } else if (gridLayout.charAt(count) != ' '){
+        //         idCounter ++;
+        //         gridComponent = componentPosition.get(idCounter).getNode();
+        //     }
+        //     if (rowCounter % 2 == 0) {
+        //         if (elementsPerRow.get(rowCounter) != 0) {
+        //             direction = direction.getRight();
+        //         } else {
+        //             direction = direction.getBottomRight();
+        //             rowCounter ++;
+        //         }
+        //     } else {
+        //         if (elementsPerRow.get(rowCounter) != 0) {
+        //             direction = direction.getLeft();
+        //         } else {
+        //             direction = direction.getBottomLeft();
+        //             rowCounter ++;
+        //         }
+        //     } 
+        //     if (originFound == false) {
+        //         direction = origin;
+        //         originFound = true;
+        //     } 
+        
+            
+            
+        // //     System.out.println(direction);
+        // //     System.out.println(gridComponent);
+        //     gameGrid.setCoordinate(direction, gridComponent);
+        //     elementsPerRow.set(rowCounter, elementsPerRow.get(rowCounter) - 1);
+        // }
         bufferedReader.close();
         // var entrySet = gameGrid.getGrid().entrySet();
         // for (var entry : entrySet) {
         //     System.out.println(entry.getKey());
         //     System.out.println(entry.getValue());
         // }
-        System.out.println(gameGrid.getGrid());
+        
         return gameGrid;
     }
+    
     /**
      * 
      * @param range

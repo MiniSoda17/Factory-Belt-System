@@ -31,10 +31,13 @@ public class GameGrid {
      */
     public GameGrid(int range) {
         this.range = range;
+        this.grid = this.generate(this.range);
+        // this.grid.put(new Coordinate(0, 0, 0), new Belt(1));
+        
     }
 
     public Map<Coordinate, GridComponent> getGrid() {
-        return this.generate(this.getRange());
+        return this.grid;
         
     }
 
