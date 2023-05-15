@@ -17,6 +17,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Iterator;
 
 import javax.swing.text.AbstractDocument.ElementEdit;
 import javax.xml.stream.events.StartDocument;
@@ -39,6 +40,10 @@ public class GameLoader {
         String receiverName = "something";
         Item producerKey = new Item(producerName);
         Item receiverKey = new Item(receiverName);
+        List<Item> producerKeys = new ArrayList<>();
+        List<Item> receiverKeys = new ArrayList<>();
+        Iterator<Item> producerKeyIterator = producerKeys.iterator();
+        Iterator<Item> receiverKeyIterator = receiverKeys.iterator();
         String line;
         HashMap <Integer, Path> componentPosition = new HashMap<>();
         String gridLayout = "";
@@ -56,30 +61,38 @@ public class GameLoader {
             } else {
                 if (sectionCount == 1) {
                     range = Integer.parseInt(section);
-                    
                     gameGrid = new GameGrid(range);
                 } else if (sectionCount == 2) {
                     producerCount = Character.getNumericValue(section.charAt(0));
                     receiverCount = Character.getNumericValue(section.charAt(1));
                 } else if (sectionCount == 3) {
                     String itemName;
+                    int nameLength = 2;
+                    if (section.contains("key")) {
+                        nameLength = 4;
+                    }
                     for (int count = 1; count <= section.length(); count ++) {
-                        if (count % 2 == 0) {
-                            itemName = section.substring(count - 2, count);
-                            producerKey = new Item(itemName);
+                        if (count % nameLength == 0) {
+                            itemName = section.substring(count - nameLength, count);
+                            producerKeys.add(new Item(itemName));
                         }
                     }
                 } else if (sectionCount == 4) {
                     String itemName;
+                    int nameLength = 2;
+                    if (section.contains("key")) {
+                        nameLength = 4;
+                    }
                     for (int count = 1; count <= section.length(); count ++) {
-                        if (count % 2 == 0) {
-                            itemName = section.substring(count - 2, count);
-                            receiverKey = new Item(itemName);
+                        if (count % nameLength == 0) {
+                            itemName = section.substring(count - nameLength, count);
+                            receiverKeys.add(new Item(itemName));
                         }
                     }
                 } else if (sectionCount == 5) {
                     gridLayout = section.replace(" ", "");
                     section = section.replace(" ", "").replace("w", "").replace("o", "");
+                    
                     for (int count = 0; count < section.length(); count++) {
                         if (section.charAt(count) == 'p') {
                             componentPosition.put(count + 1, new Path(new Producer(count + 1, producerKey)));
@@ -90,7 +103,6 @@ public class GameLoader {
                         }
                     }
                     Coordinate origin = new Coordinate(0, -range);
-                    
                     Coordinate direction = origin;
                     GridComponent gridComponent = () -> "";
                     List<Integer> elementsPerRow = rowCalculator(range);
@@ -131,68 +143,69 @@ public class GameLoader {
                 sectionCount ++;
             }
         }
-        // var entrySet = gameGrid.getGrid().entrySet();
-        // GridComponent belt = new Belt(1);
-        // GridComponent something = new Belt(2);
-        
-        // Transport producer1 = (Transport) gameGrid.getGrid().get(new Coordinate(-1, 0));
-        // Transport belt2 = (Transport) gameGrid.getGrid().get(new Coordinate(0, 0));
-        // producer1.setOutput(belt2.getPath());
-        // belt2.setInput(producer1.getPath());
         String connections = "";
+        int startID = 0;
+        int endID = 0;
         for (char character : section.toCharArray()) {
             if (character != ' ') {
                 connections += character;
             } else {
-                int startID = Character.getNumericValue(connections.charAt(0));
+                int numberEnder = connections.indexOf("-");
+                if (numberEnder == 2) {
+                    startID = Integer.parseInt(connections.substring(0, numberEnder));
+                } else {
+                    startID = Character.getNumericValue(connections.charAt(0));
+                }
                 Path startPath = componentPosition.get(startID);
-                int endID = Character.getNumericValue(connections.charAt(connections.length() - 1));
+                int numberStarter = 0;
+                if (connections.contains(",")) {
+                    numberStarter = connections.indexOf(",") + 1;
+                } else {
+                    numberStarter = connections.indexOf("-") + 1;
+                }
+                if (connections.length() - numberStarter == 2) {
+                    endID = Integer.parseInt(connections.substring(numberStarter, connections.length()));
+                } else {
+                    endID = Character.getNumericValue(connections.charAt(connections.length() - 1));
+                }
+                System.out.println(endID);
                 Path endPath = componentPosition.get(endID);
                 Path middlePath;
                 if (connections.contains(",")) {
                     if (connections.charAt(connections.indexOf("-") + 1) != ',') {
-                        middlePath = componentPosition.get(connections.indexOf("-") + 1);
+                        int middleID = 0;
+                        int start = connections.indexOf("-") + 1;
+                        int end = connections.indexOf(",");
+                        if (end - start == 2) {
+                            middleID = Integer.parseInt(connections.substring(start, end));
+                        } else {
+                            middleID = Character.getNumericValue(connections.charAt(connections.indexOf("-") + 1));
+                        }
+                        middlePath = componentPosition.get(middleID);
                         Transport startComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath.getNode()));
                         Transport middleComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(middlePath.getNode()));
-
                         startComponent.setInput(middleComponent.getPath());
                         middleComponent.setOutput(startComponent.getPath());
-                        // startPath.setPrevious(middlePath);
-                        // startPath.getNode().setInput(middlePath);
-                        // middlePath.setNext(startPath);
-                        // middlePath.getNode().setOutput(middlePath);
                     } if (connections.charAt(connections.length() - 1) != ',') {
-                        endPath = componentPosition.get(Character.getNumericValue(connections.charAt(connections.length() - 1)));
                         Transport startComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath.getNode()));
                         Transport endComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(endPath.getNode()));
                         startComponent.setOutput(endComponent.getPath());
                         endComponent.setInput(startComponent.getPath());
-                        // startPath.setNext(endPath);
-                        // startPath.getNode().setOutput(endPath);
-                        // endPath.setPrevious(startPath);
-                        // endPath.getNode().setInput(endPath);
                     }
                 } else if (startPath.getNode() instanceof Receiver) {
                     Transport startComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath.getNode()));
                     Transport endComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(endPath.getNode()));
                     startComponent.setInput(endComponent.getPath());
                     endComponent.setOutput(startComponent.getPath());
-                    // startPath.getNode().setInput(endPath);
-                    // endPath.setNext(startPath);
-                    // endPath.getNode().setOutput(endPath);
                 } else {
                     Transport startComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath.getNode()));
                     Transport endComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(endPath.getNode()));
                     startComponent.setOutput(endComponent.getPath());
                     endComponent.setInput(startComponent.getPath());
-                    // startPath.getNode().setOutput(endPath);
-                    // endPath.setPrevious(startPath);
-                    // endPath.getNode().setInput(startPath);
                 }
                 connections = "";
             }
         }
-
         bufferedReader.close();
         return gameGrid;
     }

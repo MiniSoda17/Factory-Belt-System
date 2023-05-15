@@ -133,7 +133,7 @@ public class MainApplication {
          * but you should actually use IntelliJ's
          * Debug Configurations to set the path as a command line argument. */
 
-        args = new String[]{"saves/grid3.txt"};
+        args = new String[]{"saves/gridNumberedExample.txt"};
         // args = new String[]{fileName};
 
         if (args.length != 1) {

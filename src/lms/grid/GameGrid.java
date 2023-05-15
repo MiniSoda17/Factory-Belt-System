@@ -24,7 +24,7 @@ public class GameGrid {
 
     private int range;
 
-    private Map<Coordinate, GridComponent> grid = new HashMap<>();
+    private Map<Coordinate, GridComponent> grid;;
     /**
      * 
      * @param range
@@ -37,7 +37,8 @@ public class GameGrid {
     }
 
     public Map<Coordinate, GridComponent> getGrid() {
-        return this.grid;
+        Map<Coordinate, GridComponent> gridCopy = new HashMap<>(this.grid);
+        return gridCopy;
         
     }
 
