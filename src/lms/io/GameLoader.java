@@ -45,6 +45,7 @@ public class GameLoader {
         BufferedReader bufferedReader = (BufferedReader) reader;
         int sectionCount = 1;
         String section = "";
+        HashMap<GridComponent, Coordinate> coordinateFind = new HashMap<>();
         while ((line = bufferedReader.readLine()) != null) {
             if (!(line.contains("_"))) {
                 if (sectionCount == 6) {
@@ -88,50 +89,56 @@ public class GameLoader {
                             componentPosition.put(count + 1, new Path(new Receiver(count + 1, receiverKey)));
                         }
                     }
-
+                    Coordinate origin = new Coordinate(0, -range);
+                    
+                    Coordinate direction = origin;
+                    GridComponent gridComponent = () -> "";
+                    List<Integer> elementsPerRow = rowCalculator(range);
+                    boolean originFound = false;
+                    int idCounter = 0;
+                    int rowCounter = 0;
+                    for (int count = 0; count < gridLayout.length(); count++) {
+                        if (gridLayout.charAt(count) == 'w') {
+                        gridComponent = () -> "w";
+                        } else if (gridLayout.charAt(count) == 'o') {
+                            gridComponent = () -> "o";
+                        } else if (gridLayout.charAt(count) != ' ') {
+                            idCounter ++;
+                            gridComponent = componentPosition.get(idCounter).getNode();
+                        }
+                        if (originFound == false) {
+                            direction = origin;
+                            originFound = true;
+                        } else {
+                            if (elementsPerRow.get(rowCounter) != 0) {
+                                direction = direction.getRight();
+                            } else {
+                                if (rowCounter >= range) {
+                                    origin = origin.getBottomRight();
+                                } else {
+                                    origin = origin.getBottomLeft();
+                                }
+                                direction = origin;
+                                rowCounter ++;
+                            }
+                        }
+                        coordinateFind.put(gridComponent, direction);
+                        gameGrid.setCoordinate(direction, gridComponent);
+                        elementsPerRow.set(rowCounter, elementsPerRow.get(rowCounter) - 1);
+                    }
                 } 
                 section = "";
                 sectionCount ++;
             }
         }
+        // var entrySet = gameGrid.getGrid().entrySet();
+        // GridComponent belt = new Belt(1);
+        // GridComponent something = new Belt(2);
         
-        Coordinate origin = new Coordinate(0, -range);
-        HashMap<Coordinate, GridComponent> coordinateMapping = new HashMap<>();
-        Coordinate direction = origin;
-        GridComponent gridComponent = () -> "";
-        List<Integer> elementsPerRow = rowCalculator(range);
-        boolean originFound = false;
-        int idCounter = 0;
-        int rowCounter = 0;
-        for (int count = 0; count < gridLayout.length(); count++) {
-            if (gridLayout.charAt(count) == 'w') {
-               gridComponent = () -> "w";
-            } else if (gridLayout.charAt(count) == 'o') {
-                gridComponent = () -> "o";
-            } else if (gridLayout.charAt(count) != ' ') {
-                idCounter ++;
-                gridComponent = componentPosition.get(idCounter).getNode();
-            }
-            if (originFound == false) {
-                direction = origin;
-                originFound = true;
-            } else {
-                if (elementsPerRow.get(rowCounter) != 0) {
-                    direction = direction.getRight();
-                } else {
-                    if (rowCounter >= range) {
-                        origin = origin.getBottomRight();
-                    } else {
-                        origin = origin.getBottomLeft();
-                    }
-                    direction = origin;
-                    rowCounter ++;
-                }
-            }
-            coordinateMapping.put(direction, gridComponent);
-            gameGrid.setCoordinate(direction, gridComponent);
-            elementsPerRow.set(rowCounter, elementsPerRow.get(rowCounter) - 1);
-        }
+        // Transport producer1 = (Transport) gameGrid.getGrid().get(new Coordinate(-1, 0));
+        // Transport belt2 = (Transport) gameGrid.getGrid().get(new Coordinate(0, 0));
+        // producer1.setOutput(belt2.getPath());
+        // belt2.setInput(producer1.getPath());
         String connections = "";
         for (char character : section.toCharArray()) {
             if (character != ' ') {
@@ -145,32 +152,47 @@ public class GameLoader {
                 if (connections.contains(",")) {
                     if (connections.charAt(connections.indexOf("-") + 1) != ',') {
                         middlePath = componentPosition.get(connections.indexOf("-") + 1);
-                        startPath.setPrevious(middlePath);
+                        Transport startComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath.getNode()));
+                        Transport middleComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(middlePath.getNode()));
+
+                        startComponent.setInput(middleComponent.getPath());
+                        middleComponent.setOutput(startComponent.getPath());
+                        // startPath.setPrevious(middlePath);
                         // startPath.getNode().setInput(middlePath);
-                        middlePath.setNext(startPath);
+                        // middlePath.setNext(startPath);
                         // middlePath.getNode().setOutput(middlePath);
                     } if (connections.charAt(connections.length() - 1) != ',') {
                         endPath = componentPosition.get(Character.getNumericValue(connections.charAt(connections.length() - 1)));
-                        startPath.setNext(endPath);
+                        Transport startComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath.getNode()));
+                        Transport endComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(endPath.getNode()));
+                        startComponent.setOutput(endComponent.getPath());
+                        endComponent.setInput(startComponent.getPath());
+                        // startPath.setNext(endPath);
                         // startPath.getNode().setOutput(endPath);
-                        endPath.setPrevious(startPath);
+                        // endPath.setPrevious(startPath);
                         // endPath.getNode().setInput(endPath);
                     }
                 } else if (startPath.getNode() instanceof Receiver) {
-                    startPath.setPrevious(endPath);
+                    Transport startComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath.getNode()));
+                    Transport endComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(endPath.getNode()));
+                    startComponent.setInput(endComponent.getPath());
+                    endComponent.setOutput(startComponent.getPath());
                     // startPath.getNode().setInput(endPath);
-                    endPath.setNext(startPath);
+                    // endPath.setNext(startPath);
                     // endPath.getNode().setOutput(endPath);
                 } else {
-                    startPath.setNext(endPath);
+                    Transport startComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath.getNode()));
+                    Transport endComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(endPath.getNode()));
+                    startComponent.setOutput(endComponent.getPath());
+                    endComponent.setInput(startComponent.getPath());
                     // startPath.getNode().setOutput(endPath);
-                    endPath.setPrevious(startPath);
+                    // endPath.setPrevious(startPath);
                     // endPath.getNode().setInput(startPath);
                 }
                 connections = "";
             }
         }
-        
+
         bufferedReader.close();
         return gameGrid;
     }

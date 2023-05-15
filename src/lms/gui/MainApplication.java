@@ -114,7 +114,7 @@ public class MainApplication {
 
         // System.out.println(receiverPath.toString());
 
-        String fileName = "C:\\Users\\Lister Boys\\OneDrive\\Documents\\School\\University of Queensland\\UQ 2023\\CSSE2002\\Assignment 3\\Production-Factory-Belt-System\\saves\\grid3.txt";
+        // String fileName = "C:\\Users\\Lister Boys\\OneDrive\\Documents\\School\\University of Queensland\\UQ 2023\\CSSE2002\\Assignment 3\\Production-Factory-Belt-System\\saves\\grid3.txt";
         
         /** for laptop */
         // String fileName = "C:\\Users\\isaac\\OneDrive\\Documents\\School\\University of Queensland\\UQ 2023\\CSSE2002\\Assignment 3\\Production-Factory-Belt-System\\saves\\grid1.txt";
@@ -133,8 +133,8 @@ public class MainApplication {
          * but you should actually use IntelliJ's
          * Debug Configurations to set the path as a command line argument. */
 
-        // // args = new String[]{"saves/grid1.txt"};
-        args = new String[]{fileName};
+        args = new String[]{"saves/grid3.txt"};
+        // args = new String[]{fileName};
 
         if (args.length != 1) {
             System.err.println("Usage: save_file\n");
