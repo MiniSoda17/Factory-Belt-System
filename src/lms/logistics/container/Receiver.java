@@ -63,7 +63,7 @@ public class Receiver extends Container {
 
     @Override
     public String getEncoding() {
-        return "c";
+        return "r";
     }
 
     /**

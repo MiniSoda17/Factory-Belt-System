@@ -32,7 +32,7 @@ public class GameGrid {
     public GameGrid(int range) {
         this.range = range;
         this.grid = this.generate(this.range);
-        // this.grid.put(new Coordinate(0, 0, 0), new Belt(1));
+        // this.grid.put(new Coordinate(0, -1), new Belt(1));
         
     }
 

@@ -17,12 +17,14 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.swing.text.AbstractDocument.ElementEdit;
+import javax.xml.stream.events.StartDocument;
+
 import java.io.BufferedReader;
 
 public class GameLoader {
-    
     private static GameGrid gameGrid;
-
     /**
      * @param reader
      * @return
@@ -86,13 +88,51 @@ public class GameLoader {
                             componentPosition.put(count + 1, new Path(new Receiver(count + 1, receiverKey)));
                         }
                     }
+
                 } 
                 section = "";
                 sectionCount ++;
             }
         }
-        String connections = "";
         
+        Coordinate origin = new Coordinate(0, -range);
+        HashMap<Coordinate, GridComponent> coordinateMapping = new HashMap<>();
+        Coordinate direction = origin;
+        GridComponent gridComponent = () -> "";
+        List<Integer> elementsPerRow = rowCalculator(range);
+        boolean originFound = false;
+        int idCounter = 0;
+        int rowCounter = 0;
+        for (int count = 0; count < gridLayout.length(); count++) {
+            if (gridLayout.charAt(count) == 'w') {
+               gridComponent = () -> "w";
+            } else if (gridLayout.charAt(count) == 'o') {
+                gridComponent = () -> "o";
+            } else if (gridLayout.charAt(count) != ' ') {
+                idCounter ++;
+                gridComponent = componentPosition.get(idCounter).getNode();
+            }
+            if (originFound == false) {
+                direction = origin;
+                originFound = true;
+            } else {
+                if (elementsPerRow.get(rowCounter) != 0) {
+                    direction = direction.getRight();
+                } else {
+                    if (rowCounter >= range) {
+                        origin = origin.getBottomRight();
+                    } else {
+                        origin = origin.getBottomLeft();
+                    }
+                    direction = origin;
+                    rowCounter ++;
+                }
+            }
+            coordinateMapping.put(direction, gridComponent);
+            gameGrid.setCoordinate(direction, gridComponent);
+            elementsPerRow.set(rowCounter, elementsPerRow.get(rowCounter) - 1);
+        }
+        String connections = "";
         for (char character : section.toCharArray()) {
             if (character != ' ') {
                 connections += character;
@@ -105,85 +145,35 @@ public class GameLoader {
                 if (connections.contains(",")) {
                     if (connections.charAt(connections.indexOf("-") + 1) != ',') {
                         middlePath = componentPosition.get(connections.indexOf("-") + 1);
-                        startPath.previous(middlePath);
-                        startPath.getNode().setInput(middlePath);
-                        middlePath.next(startPath);
-                        middlePath.getNode().setOutput(middlePath);
+                        startPath.setPrevious(middlePath);
+                        // startPath.getNode().setInput(middlePath);
+                        middlePath.setNext(startPath);
+                        // middlePath.getNode().setOutput(middlePath);
                     } if (connections.charAt(connections.length() - 1) != ',') {
                         endPath = componentPosition.get(Character.getNumericValue(connections.charAt(connections.length() - 1)));
-                        startPath.next(endPath);
-                        startPath.getNode().setOutput(endPath);
-                        endPath.previous(startPath);
-                        endPath.getNode().setInput(endPath);
+                        startPath.setNext(endPath);
+                        // startPath.getNode().setOutput(endPath);
+                        endPath.setPrevious(startPath);
+                        // endPath.getNode().setInput(endPath);
                     }
                 } else if (startPath.getNode() instanceof Receiver) {
-                    startPath.previous(endPath);
-                    startPath.getNode().setInput(endPath);
-                    endPath.next(startPath);
-                    endPath.getNode().setOutput(endPath);
+                    startPath.setPrevious(endPath);
+                    // startPath.getNode().setInput(endPath);
+                    endPath.setNext(startPath);
+                    // endPath.getNode().setOutput(endPath);
                 } else {
-                    startPath.next(endPath);
-                    startPath.getNode().setOutput(endPath);
-                    endPath.previous(startPath);
-                    endPath.getNode().setInput(startPath);
+                    startPath.setNext(endPath);
+                    // startPath.getNode().setOutput(endPath);
+                    endPath.setPrevious(startPath);
+                    // endPath.getNode().setInput(startPath);
                 }
                 connections = "";
             }
         }
-        Coordinate origin = new Coordinate();
-        GridComponent gridComponent = () -> "";
-        Coordinate direction = origin;
-        List<Integer> elementsPerRow = rowCalculator(range);
-        boolean originFound = false;
-        int idCounter = 0;
-        int rowCounter = 0;
-        // for (int count = 0; count < gridLayout.length(); count++) {
-            
-        //     if (gridLayout.charAt(count) == 'w') {
-        //         gridComponent = () -> "w";
-        //     } else if (gridLayout.charAt(count) == 'o') {
-        //         gridComponent = () -> "o";
-        //     } else if (gridLayout.charAt(count) != ' '){
-        //         idCounter ++;
-        //         gridComponent = componentPosition.get(idCounter).getNode();
-        //     }
-        //     if (rowCounter % 2 == 0) {
-        //         if (elementsPerRow.get(rowCounter) != 0) {
-        //             direction = direction.getRight();
-        //         } else {
-        //             direction = direction.getBottomRight();
-        //             rowCounter ++;
-        //         }
-        //     } else {
-        //         if (elementsPerRow.get(rowCounter) != 0) {
-        //             direction = direction.getLeft();
-        //         } else {
-        //             direction = direction.getBottomLeft();
-        //             rowCounter ++;
-        //         }
-        //     } 
-        //     if (originFound == false) {
-        //         direction = origin;
-        //         originFound = true;
-        //     } 
         
-            
-            
-        // //     System.out.println(direction);
-        // //     System.out.println(gridComponent);
-        //     gameGrid.setCoordinate(direction, gridComponent);
-        //     elementsPerRow.set(rowCounter, elementsPerRow.get(rowCounter) - 1);
-        // }
         bufferedReader.close();
-        // var entrySet = gameGrid.getGrid().entrySet();
-        // for (var entry : entrySet) {
-        //     System.out.println(entry.getKey());
-        //     System.out.println(entry.getValue());
-        // }
-        
         return gameGrid;
     }
-    
     /**
      * 
      * @param range

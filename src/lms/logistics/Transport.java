@@ -59,7 +59,7 @@ public abstract class Transport implements Tickable, GridComponent {
      * @return Path previous value node
      */
     public Path getInput() {
-        return path.previous();
+        return path.getPrevious();
     }
 
     /**
@@ -69,7 +69,7 @@ public abstract class Transport implements Tickable, GridComponent {
      *
      */
     public Path getOutput() {
-        return path.next();
+        return path.getNext();
     }
 
     /**
@@ -77,7 +77,7 @@ public abstract class Transport implements Tickable, GridComponent {
      * @param input Path
      */
     public void setInput(Path input) {
-        path.previous(input);
+        path.setPrevious(input);
     }
 
     /**
@@ -85,7 +85,7 @@ public abstract class Transport implements Tickable, GridComponent {
      * @param output Path of the next node (if it exists)
      */
     public void setOutput(Path output) {
-        path.next(output);
+        path.setNext(output);
     }
 
     /**
@@ -124,10 +124,10 @@ public abstract class Transport implements Tickable, GridComponent {
     public void tick() {
         if (inventory != null) {     /* if is NOT empty */
             Path path = getPath();   /* get the next item in the path */
-            if (path.next() == null) { /* if there's no item then stop */
+            if (path.getNext() == null) { /* if there's no item then stop */
                 return;
             }
-            Transport nextNode = path.next().getNode(); /* if there's a next item and */
+            Transport nextNode = path.getNext().getNode(); /* if there's a next item and */
 
             if (nextNode.inventory == null) {         /* its inventory is empty */
                 nextNode.inventory = inventory;       /* transfer inventory to the next inventory */

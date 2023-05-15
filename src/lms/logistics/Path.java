@@ -26,8 +26,8 @@ public class Path {
      */
     public Path(Path path) {
         this.node = path.getNode();
-        this.previous = path.previous();
-        this.next = path.next();
+        this.previous = path.getPrevious();
+        this.next = path.getNext();
     }
 
     /**
@@ -63,8 +63,8 @@ public class Path {
      */
     public Path head() {
         Path holder = this;
-        while(holder.previous() != null) {
-            holder = holder.previous();
+        while(holder.getPrevious() != null) {
+            holder = holder.getPrevious();
         }
         return holder;
     }
@@ -83,8 +83,8 @@ public class Path {
      */
     public Path tail() {
         Path holder = this;
-        while (holder.next() != null) {
-            holder = holder.next();
+        while (holder.getNext() != null) {
+            holder = holder.getNext();
         }
         return holder;
     }
@@ -93,21 +93,21 @@ public class Path {
      * 
      * @return
      */
-    public Path previous() {
+    public Path getPrevious() {
         return this.previous;
     }
 
     /**
      *  
      */ 
-    public void previous(Path path) {
+    public void setPrevious(Path path) {
         this.previous = path;
     }
 
     /**
      * @return
      */
-    public Path next() {
+    public Path getNext() {
         return this.next;
     }
 
@@ -115,7 +115,7 @@ public class Path {
      * 
      * @param path
      */
-    public void next(Path path) {
+    public void setNext(Path path) {
         this.next = path;
     }
 
@@ -155,7 +155,7 @@ public class Path {
         if (holder == null) {
             return "";
         }
-        return holder.getNode() + " -> " + this.finder(holder.next());
+        return holder.getNode() + " -> " + this.finder(holder.getNext());
     }
 
     /**

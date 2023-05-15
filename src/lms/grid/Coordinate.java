@@ -238,7 +238,7 @@ public class Coordinate {
          * from this coordinate to the next
          */
         Coordinate vector = normalise(coordinate.subtract(this));
-
+        
         List<Orientation> ors = directions.entrySet().stream()
                 .filter(entry -> entry.getValue().equals(vector))
                 .map(Map.Entry::getKey)
