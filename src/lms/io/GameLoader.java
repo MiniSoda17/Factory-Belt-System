@@ -38,16 +38,21 @@ public class GameLoader {
         int sectionCount = 1;
         String producerName = "something";
         String receiverName = "something";
+
         Item producerKey = new Item(producerName);
         Item receiverKey = new Item(receiverName);
         List<Item> producerKeys = new ArrayList<>();
         List<Item> receiverKeys = new ArrayList<>();
+
         HashMap <Integer, Path> componentPosition = new HashMap<>();
         HashMap<GridComponent, Coordinate> coordinateFind = new HashMap<>();
         BufferedReader bufferedReader = (BufferedReader) reader;
+
         String gridLayout = "";
         String section = "";
         String line;
+
+        // Reads each line in the text file and stops if the line is empty
         while ((line = bufferedReader.readLine()) != null) {
             if (!(line.contains("_"))) {
                 if (sectionCount == 6) {
