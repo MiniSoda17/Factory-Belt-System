@@ -11,46 +11,42 @@ import lms.logistics.belts.Belt;
 import lms.logistics.container.Producer;
 import lms.logistics.container.Receiver;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Iterator;
-
-import javax.swing.text.AbstractDocument.ElementEdit;
-import javax.xml.stream.events.StartDocument;
 
 import java.io.BufferedReader;
 
 public class GameLoader {
+    /** Used to represent the coordinates of each GridComponent and their Coordinate on a map */
     private static GameGrid gameGrid;
+
     /**
-     * @param reader
-     * @return
-     * @throws IOException
-     * @throws FileFormatException
+     * Parses through a text file and converts it to a GameGrid
+     * @param reader The text file to be read through
+     * @return A GameGrid
+     * @throws IOException 
+     * @throws FileFormatException when the file cannot be read
      */
     public static GameGrid load(Reader reader) throws IOException, FileFormatException {
         int range = 0;
-        int producerCount = 0;
-        int receiverCount = 0;
+        int producerCount;
+        int receiverCount;
+        int sectionCount = 1;
         String producerName = "something";
         String receiverName = "something";
         Item producerKey = new Item(producerName);
         Item receiverKey = new Item(receiverName);
         List<Item> producerKeys = new ArrayList<>();
         List<Item> receiverKeys = new ArrayList<>();
-        Iterator<Item> producerKeyIterator = producerKeys.iterator();
-        Iterator<Item> receiverKeyIterator = receiverKeys.iterator();
-        String line;
         HashMap <Integer, Path> componentPosition = new HashMap<>();
-        String gridLayout = "";
-        BufferedReader bufferedReader = (BufferedReader) reader;
-        int sectionCount = 1;
-        String section = "";
         HashMap<GridComponent, Coordinate> coordinateFind = new HashMap<>();
+        BufferedReader bufferedReader = (BufferedReader) reader;
+        String gridLayout = "";
+        String section = "";
+        String line;
         while ((line = bufferedReader.readLine()) != null) {
             if (!(line.contains("_"))) {
                 if (sectionCount == 6) {
@@ -66,83 +62,53 @@ public class GameLoader {
                     producerCount = Character.getNumericValue(section.charAt(0));
                     receiverCount = Character.getNumericValue(section.charAt(1));
                 } else if (sectionCount == 3) {
-                    String itemName;
-                    int nameLength = 2;
-                    if (section.contains("key")) {
-                        nameLength = 4;
-                    }
-                    for (int count = 1; count <= section.length(); count ++) {
-                        if (count % nameLength == 0) {
-                            itemName = section.substring(count - nameLength, count);
-                            producerKeys.add(new Item(itemName));
-                        }
-                    }
+                    createKeys(section, producerKeys);
                 } else if (sectionCount == 4) {
-                    String itemName;
-                    int nameLength = 2;
-                    if (section.contains("key")) {
-                        nameLength = 4;
-                    }
-                    for (int count = 1; count <= section.length(); count ++) {
-                        if (count % nameLength == 0) {
-                            itemName = section.substring(count - nameLength, count);
-                            receiverKeys.add(new Item(itemName));
-                        }
-                    }
+                    createKeys(section, receiverKeys);
                 } else if (sectionCount == 5) {
                     gridLayout = section.replace(" ", "");
                     section = section.replace(" ", "").replace("w", "").replace("o", "");
-                    
-                    for (int count = 0; count < section.length(); count++) {
-                        if (section.charAt(count) == 'p') {
-                            componentPosition.put(count + 1, new Path(new Producer(count + 1, producerKey)));
-                        } else if (section.charAt(count) == 'b') {
-                            componentPosition.put(count + 1, new Path(new Belt(count + 1)));
-                        } else if (section.charAt(count) == 'r') {
-                            componentPosition.put(count + 1, new Path(new Receiver(count + 1, receiverKey)));
-                        }
-                    }
-                    Coordinate origin = new Coordinate(0, -range);
-                    Coordinate direction = origin;
-                    GridComponent gridComponent = () -> "";
-                    List<Integer> elementsPerRow = rowCalculator(range);
-                    boolean originFound = false;
-                    int idCounter = 0;
-                    int rowCounter = 0;
-                    for (int count = 0; count < gridLayout.length(); count++) {
-                        if (gridLayout.charAt(count) == 'w') {
-                        gridComponent = () -> "w";
-                        } else if (gridLayout.charAt(count) == 'o') {
-                            gridComponent = () -> "o";
-                        } else if (gridLayout.charAt(count) != ' ') {
-                            idCounter ++;
-                            gridComponent = componentPosition.get(idCounter).getNode();
-                        }
-                        if (originFound == false) {
-                            direction = origin;
-                            originFound = true;
-                        } else {
-                            if (elementsPerRow.get(rowCounter) != 0) {
-                                direction = direction.getRight();
-                            } else {
-                                if (rowCounter >= range) {
-                                    origin = origin.getBottomRight();
-                                } else {
-                                    origin = origin.getBottomLeft();
-                                }
-                                direction = origin;
-                                rowCounter ++;
-                            }
-                        }
-                        coordinateFind.put(gridComponent, direction);
-                        gameGrid.setCoordinate(direction, gridComponent);
-                        elementsPerRow.set(rowCounter, elementsPerRow.get(rowCounter) - 1);
-                    }
+                    createPaths(section, componentPosition, producerKey, receiverKey);
+                    mapGameGrid(gridLayout, componentPosition, range, coordinateFind);
                 } 
                 section = "";
                 sectionCount ++;
             }
         }
+        createConnections(section, componentPosition, coordinateFind);
+        bufferedReader.close();
+        return gameGrid;
+    }
+
+    /**
+     * Creates the item name for all the keys
+     * 
+     * @param section A string representing all the names of the keys
+     * @param keys A list that will hold all the key names
+     */
+    private static void createKeys(String section, List<Item> keys) {
+        String itemName;
+        int nameLength = 2;
+        if (section.contains("key")) {
+            nameLength = 4;
+        }
+        for (int count = 1; count <= section.length(); count ++) {
+            if (count % nameLength == 0) {
+                itemName = section.substring(count - nameLength, count);
+                keys.add(new Item(itemName));
+            }
+        }
+    }
+
+    /**
+     * Creates the previous and next connections between the GridComponents in GameGrid
+     * 
+     * @param section A String which represents what connections need to be made
+     * @param componentPosition A HashMap which links all the GridComponents with their id
+     * @param coordinateFind
+     */
+    private static void createConnections(String section, HashMap<Integer, Path> componentPosition,
+            HashMap<GridComponent, Coordinate> coordinateFind) {
         String connections = "";
         int startID = 0;
         int endID = 0;
@@ -168,7 +134,6 @@ public class GameLoader {
                 } else {
                     endID = Character.getNumericValue(connections.charAt(connections.length() - 1));
                 }
-                System.out.println(endID);
                 Path endPath = componentPosition.get(endID);
                 Path middlePath;
                 if (connections.contains(",")) {
@@ -182,37 +147,124 @@ public class GameLoader {
                             middleID = Character.getNumericValue(connections.charAt(connections.indexOf("-") + 1));
                         }
                         middlePath = componentPosition.get(middleID);
-                        Transport startComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath.getNode()));
-                        Transport middleComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(middlePath.getNode()));
-                        startComponent.setInput(middleComponent.getPath());
-                        middleComponent.setOutput(startComponent.getPath());
+                        addBackwardsConnection(coordinateFind, startPath, middlePath);
                     } if (connections.charAt(connections.length() - 1) != ',') {
-                        Transport startComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath.getNode()));
-                        Transport endComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(endPath.getNode()));
-                        startComponent.setOutput(endComponent.getPath());
-                        endComponent.setInput(startComponent.getPath());
+                        addForwardConnection(coordinateFind, startPath, endPath);
                     }
                 } else if (startPath.getNode() instanceof Receiver) {
-                    Transport startComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath.getNode()));
-                    Transport endComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(endPath.getNode()));
-                    startComponent.setInput(endComponent.getPath());
-                    endComponent.setOutput(startComponent.getPath());
+                    addBackwardsConnection(coordinateFind, startPath, endPath);
                 } else {
-                    Transport startComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath.getNode()));
-                    Transport endComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(endPath.getNode()));
-                    startComponent.setOutput(endComponent.getPath());
-                    endComponent.setInput(startComponent.getPath());
+                    addForwardConnection(coordinateFind, startPath, endPath);
                 }
                 connections = "";
             }
         }
-        bufferedReader.close();
-        return gameGrid;
     }
+
     /**
+     * Creates a backwards Connection between two Transport Nodes
      * 
-     * @param range
-     * @return
+     * @param startPath the Path that contains the Transport Node to be connected
+     * @param endPath the second Path that contains the Transport Node to be connected
+     * @param coordinateFind A hashmap containing the coordinate of each Transport Node
+     */
+    private static void addForwardConnection(HashMap<GridComponent, Coordinate> coordinateFind, 
+            Path startPath, Path endPath) {
+        Transport startTransport = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath.getNode()));
+        Transport endTransport = (Transport) gameGrid.getGrid().get(coordinateFind.get(endPath.getNode()));
+        startTransport.setOutput(endTransport.getPath());
+        endTransport.setInput(startTransport.getPath());
+    }
+
+    /**
+     * Creates a Forward Connection between two Transport Nodes
+     * 
+     * @param startPath the Path that contains the Transport Node to be connected
+     * @param endPath the second Path that contains the Transport Node to be connected
+     * @param coordinateFind A hashmap containing the coordinate of each Transport Node
+     */
+    private static void addBackwardsConnection(HashMap<GridComponent, Coordinate> coordinateFind, 
+            Path startPath, Path endPath) {
+        Transport startComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath.getNode()));
+        Transport endComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(endPath.getNode()));
+        startComponent.setInput(endComponent.getPath());
+        endComponent.setOutput(startComponent.getPath());
+    }
+
+    /**
+     * Creates all the necessary paths with a positionalID
+     * 
+     * @param section A string which contains all the necessary paths to be made
+     * @param componentPosition A hashmap which holds each GridComponent linked with their ID
+     * @param producerKey An item for the Producer to be the key
+     * @param receiverKey An item for the Receiver to be the key
+     */
+    private static void createPaths(String section, HashMap<Integer, Path> componentPosition, 
+            Item producerKey, Item receiverKey) {
+        for (int count = 0; count < section.length(); count++) {
+            if (section.charAt(count) == 'p') {
+                componentPosition.put(count + 1, new Path(new Producer(count + 1, producerKey)));
+            } else if (section.charAt(count) == 'b') {
+                componentPosition.put(count + 1, new Path(new Belt(count + 1)));
+            } else if (section.charAt(count) == 'r') {
+                componentPosition.put(count + 1, new Path(new Receiver(count + 1, receiverKey)));
+            }
+        }
+    }
+    
+    /**
+     * Sets each GridComponent to a coordinate in GameGrid
+     * 
+     * @param gridLayout A string that represents the position of all the GridComponent
+     * @param componentPosition A hashmap containing the the positional id of each GridComponent
+     * @param range An integer used to calculate the positional values of the grid
+     * @param coordinateFind A HashMap which enables us to find the Coordinate of a GridComponent
+     */
+    private static void mapGameGrid(String gridLayout, HashMap<Integer, Path> componentPosition, 
+            int range, HashMap<GridComponent, Coordinate> coordinateFind) {
+        Coordinate origin = new Coordinate(0, -range);
+        Coordinate direction = origin;
+        GridComponent gridComponent = () -> "";
+        List<Integer> elementsPerRow = rowCalculator(range);
+        boolean originFound = false;
+        int idCounter = 0;
+        int rowCounter = 0;
+        for (int count = 0; count < gridLayout.length(); count++) {
+            if (gridLayout.charAt(count) == 'w') {
+            gridComponent = () -> "w";
+            } else if (gridLayout.charAt(count) == 'o') {
+                gridComponent = () -> "o";
+            } else if (gridLayout.charAt(count) != ' ') {
+                idCounter ++;
+                gridComponent = componentPosition.get(idCounter).getNode();
+            }
+            if (originFound == false) {
+                direction = origin;
+                originFound = true;
+            } else {
+                if (elementsPerRow.get(rowCounter) != 0) {
+                    direction = direction.getRight();
+                } else {
+                    if (rowCounter >= range) {
+                        origin = origin.getBottomRight();
+                    } else {
+                        origin = origin.getBottomLeft();
+                    }
+                    direction = origin;
+                    rowCounter ++;
+                }
+            }
+            coordinateFind.put(gridComponent, direction);
+            gameGrid.setCoordinate(direction, gridComponent);
+            elementsPerRow.set(rowCounter, elementsPerRow.get(rowCounter) - 1);
+        }
+    }
+
+    /**
+     * Calculates the amount of elements per row using the range
+     * 
+     * @param range an integer given from a text file
+     * @return an ArrayList with the amount of elements per row
      */
     private static ArrayList<Integer> rowCalculator(int range) {
         ArrayList <Integer> elementsPerRow = new ArrayList<>();
