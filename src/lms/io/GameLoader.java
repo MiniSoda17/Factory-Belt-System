@@ -25,6 +25,7 @@ public class GameLoader {
 
     /**
      * Parses through a text file and converts it to a GameGrid
+     * 
      * @param reader The text file to be read through
      * @return A GameGrid
      * @throws IOException 

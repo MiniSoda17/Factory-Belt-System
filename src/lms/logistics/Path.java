@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
-
 /**
  * Maintains a doubly linked list to maintain the links for each node.
  * Has previous and next item.
@@ -58,8 +57,8 @@ public class Path {
     }
 
     /**
-     * 
-     * @return
+     * Iterates through the previous paths to find the first path
+     * @return the head of the path
      */
     public Path head() {
         Path holder = this;
@@ -70,16 +69,15 @@ public class Path {
     }
 
     /**
-     * 
-     * @return
+     * @return The Transport Node of this path
      */
     public Transport getNode() {
         return this.node;
     }
 
     /**
-     * 
-     * @return
+     * Iterates through the next paths to find the last path
+     * @return The tail of the path
      */
     public Path tail() {
         Path holder = this;
@@ -91,29 +89,30 @@ public class Path {
 
     /**
      * 
-     * @return
+     * @return The previous path of this one
      */
     public Path getPrevious() {
         return this.previous;
     }
 
     /**
-     *  
-     */ 
+     * Sets the previous element of this path to the path given
+     * @param path The Path to be assigned to the previous Path of this Path. 
+     */
     public void setPrevious(Path path) {
         this.previous = path;
     }
 
     /**
-     * @return
+     * @return The path that is assigned next after this one
      */
     public Path getNext() {
         return this.next;
     }
 
     /**
-     * 
-     * @param path
+     * Sets the given path to be the next Path of this Path
+     * @param path the path that will be assigned as next
      */
     public void setNext(Path path) {
         this.next = path;
@@ -142,14 +141,20 @@ public class Path {
     }
 
     /**
-     * 
+     * @return A string formatted version which includes all the connected paths to this one
      */
+    @Override
     public String toString() {
         Path head = this.head();
 
         return String.format("START -> %sEND", this.finder(head));
     }
-  
+    
+    /**
+     * A recursive function used to find all the connected paths
+     * @param path The Path that will be iterated through
+     * @return A string containing each Path
+     */
     private String finder(Path path) {
         Path holder = path;
         if (holder == null) {
@@ -160,7 +165,7 @@ public class Path {
 
     /**
      * @param o
-     * @return
+     * @return A boolean value representing whether the given value is the same as this Path
      */
     @Override
     public boolean equals(Object o) {
