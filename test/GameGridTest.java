@@ -70,17 +70,18 @@ public class GameGridTest {
     @Test
     public void getGridTest1() {
         Map<Coordinate, GridComponent> gridCopy = new HashMap<>(gameGrid1.getGrid());
-
-        assertEquals(gridCopy, new HashMap<>(gameGrid1.getGrid()));
+        assertEquals(gridCopy, gameGrid1.getGrid());
     }
 
     @Test
-    public void getGridTest1() {
-
+    public void getGridTest2() {
+        Map<Coordinate, GridComponent> gridCopy = new HashMap<>(gameGrid2.getGrid());
+        assertEquals(gridCopy, gameGrid2.getGrid());
     }
 
     @Test
-    public void getGridTest1() {
-
+    public void getGridTest3() {
+        Map<Coordinate, GridComponent> gridCopy = new HashMap<>(gameGrid3.getGrid());
+        assertEquals(gridCopy, gameGrid3.getGrid());
     }
 }

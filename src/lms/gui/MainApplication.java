@@ -2,24 +2,13 @@ package lms.gui;
 
 import lms.exceptions.FileFormatException;
 import lms.io.GameLoader;
-import lms.grid.Coordinate;
 import lms.grid.GameGrid;
-import lms.logistics.belts.Belt;
-import lms.logistics.container.Container;
-import lms.logistics.container.Producer;
-import lms.logistics.Item;
-import lms.logistics.Path;
-import lms.logistics.Transport;
-import lms.logistics.container.Receiver;
 
 import javax.swing.JFrame;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.Random;
 
 /**
  * Main application class which starts the application and sets the root frame.

@@ -3,11 +3,6 @@ package lms.grid;
 import java.util.HashMap;
 import java.util.Map;
 
-import lms.logistics.Item;
-import lms.logistics.Path;
-import lms.logistics.belts.Belt;
-import lms.logistics.container.Producer;
-
 /**
  * The GameGrid is responsible for managing the state and initialisation of the game's grid.
  * It provides the Map structure to hold the coordinates of each node in the grid. It also
@@ -42,7 +37,6 @@ public class GameGrid {
     public Map<Coordinate, GridComponent> getGrid() {
         Map<Coordinate, GridComponent> gridCopy = new HashMap<>(this.grid);
         return gridCopy;
-        
     }
 
     /**
