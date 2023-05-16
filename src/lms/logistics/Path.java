@@ -14,14 +14,15 @@ import java.util.function.Consumer;
  */
 public class Path {
     /** */
-    public Transport node;
+    private Transport node;
     /** */
-    public Path previous;
-
-    public Path next;
+    private Path previous;
+    /** */
+    private Path next;
     /**
+     * Constructs a new Path class and copies the node, previous and next of the given Path
      * 
-     * @param path
+     * @param path The path to be copied 
      */
     public Path(Path path) {
         this.node = path.getNode();
@@ -30,9 +31,10 @@ public class Path {
     }
 
     /**
+     * Constructs a new Path and assigns the given Transport Node but sets previous and next to null
      * 
-     * @param node
-     * @throws IllegalArgumentException
+     * @param node The Transport node to be assigned to this Path
+     * @throws IllegalArgumentException will throw if the given Transport node is null
      */
     public Path(Transport node) throws IllegalArgumentException {
         if (node == null) {
@@ -44,10 +46,11 @@ public class Path {
     }
 
     /**
+     * Constructs a new Path and sets the node, previous path and next path with the given values
      * 
-     * @param node
-     * @param previous
-     * @param next
+     * @param node A transport Node that will be set to this Path
+     * @param previous A path that is linked to the previous element of this Path
+     * @param next A path that is linked to the next element of this Path
      * @throws IllegalArgumentException
      */
     public Path(Transport node, Path previous, Path next) throws IllegalArgumentException {
@@ -58,6 +61,7 @@ public class Path {
 
     /**
      * Iterates through the previous paths to find the first path
+     * 
      * @return the head of the path
      */
     public Path head() {
@@ -69,6 +73,8 @@ public class Path {
     }
 
     /**
+     * Gets the Node of this Path
+     * 
      * @return The Transport Node of this path
      */
     public Transport getNode() {
@@ -77,6 +83,7 @@ public class Path {
 
     /**
      * Iterates through the next paths to find the last path
+     * 
      * @return The tail of the path
      */
     public Path tail() {
@@ -88,6 +95,7 @@ public class Path {
     }
 
     /**
+     * Gets the previous path of this Path
      * 
      * @return The previous path of this one
      */
@@ -97,6 +105,7 @@ public class Path {
 
     /**
      * Sets the previous element of this path to the path given
+     * 
      * @param path The Path to be assigned to the previous Path of this Path. 
      */
     public void setPrevious(Path path) {
@@ -104,7 +113,9 @@ public class Path {
     }
 
     /**
-     * @return The path that is assigned next after this one
+     * Gets the next path connected to this path
+     * 
+     * @return The path that is assigned next to this one
      */
     public Path getNext() {
         return this.next;
@@ -112,6 +123,7 @@ public class Path {
 
     /**
      * Sets the given path to be the next Path of this Path
+     * 
      * @param path the path that will be assigned as next
      */
     public void setNext(Path path) {
@@ -141,6 +153,8 @@ public class Path {
     }
 
     /**
+     * Gets a string of all paths connected
+     * 
      * @return A string formatted version which includes all the connected paths to this one
      */
     @Override
@@ -152,6 +166,7 @@ public class Path {
     
     /**
      * A recursive function used to find all the connected paths
+     * 
      * @param path The Path that will be iterated through
      * @return A string containing each Path
      */
@@ -164,7 +179,9 @@ public class Path {
     }
 
     /**
-     * @param o
+     * Checks to see if the the given object is the same value as this object.
+     * 
+     * @param o the object that will be compared to this object
      * @return A boolean value representing whether the given value is the same as this Path
      */
     @Override
@@ -174,9 +191,7 @@ public class Path {
             if (this.getNode() == path.getNode()) {
                 return true;
             }
-
         }
         return false;
     }
-
 }

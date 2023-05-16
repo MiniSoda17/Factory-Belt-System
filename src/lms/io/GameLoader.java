@@ -113,6 +113,8 @@ public class GameLoader {
         String connections = "";
         int startID = 0;
         int endID = 0;
+        
+        // Finding the GridComponents per line
         for (char character : section.toCharArray()) {
             if (character != ' ') {
                 connections += character;
@@ -137,6 +139,8 @@ public class GameLoader {
                 }
                 Path endPath = componentPosition.get(endID);
                 Path middlePath;
+
+                // Creating connections depending on the GridComponent type
                 if (connections.contains(",")) {
                     if (connections.charAt(connections.indexOf("-") + 1) != ',') {
                         int middleID = 0;
@@ -203,12 +207,16 @@ public class GameLoader {
     private static void createPaths(String section, HashMap<Integer, Path> componentPosition, 
             Item producerKey, Item receiverKey) {
         for (int count = 0; count < section.length(); count++) {
-            if (section.charAt(count) == 'p') {
-                componentPosition.put(count + 1, new Path(new Producer(count + 1, producerKey)));
-            } else if (section.charAt(count) == 'b') {
-                componentPosition.put(count + 1, new Path(new Belt(count + 1)));
-            } else if (section.charAt(count) == 'r') {
-                componentPosition.put(count + 1, new Path(new Receiver(count + 1, receiverKey)));
+            switch(section.charAt(count)) {
+                case 'p':
+                    componentPosition.put(count + 1, new Path(new Producer(count + 1, producerKey)));
+                    break;
+                case 'b':
+                    componentPosition.put(count + 1, new Path(new Belt(count + 1)));
+                    break;
+                case 'r':
+                    componentPosition.put(count + 1, new Path(new Receiver(count + 1, receiverKey)));
+                    break;
             }
         }
     }
@@ -227,9 +235,12 @@ public class GameLoader {
         Coordinate direction = origin;
         GridComponent gridComponent = () -> "";
         List<Integer> elementsPerRow = rowCalculator(range);
+
         boolean originFound = false;
         int idCounter = 0;
         int rowCounter = 0;
+        
+        // Navigating through the Grid and assigning GridComponents with Coordinates
         for (int count = 0; count < gridLayout.length(); count++) {
             if (gridLayout.charAt(count) == 'w') {
             gridComponent = () -> "w";
@@ -272,6 +283,8 @@ public class GameLoader {
         int gridLength = range * 2 + 1;
         int countPerRow = range;
         int middleRow = range + 1;
+
+        // Counts the amount of elements per row
         for (int i = 0; i < gridLength; i++) {
             if (i + 1 > middleRow) {
                 countPerRow--;

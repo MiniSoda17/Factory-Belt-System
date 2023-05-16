@@ -21,31 +21,44 @@ import lms.logistics.container.Producer;
  *
  */
 public class GameGrid {
-
+    /** An integer used to calculate the size of the grid */
     private int range;
-
+    /** A HashMap which will keep track of each coordinate and the gridcomponent with it */
     private Map<Coordinate, GridComponent> grid;;
+
     /**
-     * 
+     * Constructs a new GameGrid
      * @param range
      */
     public GameGrid(int range) {
         this.range = range;
         this.grid = this.generate(this.range);
-        // this.grid.put(new Coordinate(0, -1), new Belt(1));
-        
     }
 
+    /**
+     * Gets the a copy of the grid HashMap
+     * @return a copy of the grid
+     */
     public Map<Coordinate, GridComponent> getGrid() {
         Map<Coordinate, GridComponent> gridCopy = new HashMap<>(this.grid);
         return gridCopy;
         
     }
 
+    /**
+     * Gets the range of this GameGrid
+     * @return an integer which represents the range of this GameGrid
+     */
     public int getRange() {
         return this.range;
     }
 
+    /**
+     * Maps a coordinate and a GridComponent to this grid's HashMap
+     * 
+     * @param coordinate The coordinated to be added to the grip HashMap as the key
+     * @param componenet The component to be added to the grid Hashmap as the value
+     */
     public void setCoordinate(Coordinate coordinate, GridComponent componenet) {
         grid.put(coordinate, componenet);
     }

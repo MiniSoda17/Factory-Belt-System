@@ -100,41 +100,10 @@ public class MainApplication {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException, FileFormatException {
-        
-        // Item item = new Item("package");
-        // Transport producer = new Producer(1, item);
-        // Transport belt = new Belt(2);
-        // Transport receiver = new Receiver(3, item);
-        // Path producerPath = new Path(producer);
-        // Path receiverPath = new Path(receiver);
-
-        // Path beltPath = new Path(belt, producerPath, receiverPath);
-        // producerPath.next(beltPath);
-        // receiverPath.previous(beltPath);
-
-        // System.out.println(receiverPath.toString());
-
-        // String fileName = "C:\\Users\\Lister Boys\\OneDrive\\Documents\\School\\University of Queensland\\UQ 2023\\CSSE2002\\Assignment 3\\Production-Factory-Belt-System\\saves\\grid3.txt";
-        
-        /** for laptop */
-        // String fileName = "C:\\Users\\isaac\\OneDrive\\Documents\\School\\University of Queensland\\UQ 2023\\CSSE2002\\Assignment 3\\Production-Factory-Belt-System\\saves\\grid1.txt";
-        // Reader bufferedReader = new BufferedReader(new FileReader(fileName));
-        // // Reader bufferedReader = new FileReader(fileName);
-    
-        // GameLoader.load(bufferedReader);
-
-        // GameGrid gameGrid = new GameGrid(1);
-        // Coordinate coordinate = new Coordinate(1, 1, 1);
-        // System.out.println(coordinate.getBottomLeft().toString());
-        
-
-
         /* This line can be used to short-cut args,
          * but you should actually use IntelliJ's
          * Debug Configurations to set the path as a command line argument. */
-
         args = new String[]{"saves/gridNumberedExample.txt"};
-        // args = new String[]{fileName};
 
         if (args.length != 1) {
             System.err.println("Usage: save_file\n");

@@ -18,7 +18,7 @@ public abstract class Transport implements Tickable, GridComponent {
 
     /**
      * stores the name of an Item that is either produced, receiver
-     * ot transported
+     * o4 transported
      */
     private Item inventory;
 

@@ -3,14 +3,17 @@ package lms.logistics;
 import java.util.Objects;
 
 /**
- * 
+ * A class that represents an Item
  */
 public class Item {
     /** The name given for this item */
     private String name;
+
     /**
-     * @param name
-     * @throws IllegalArgumentException
+     * Constructs an Item with the given name
+     * 
+     * @param name The name that will be assigned to this Item
+     * @throws IllegalArgumentException will throw if the given name is null or empty
      */
     public Item(String name) throws IllegalArgumentException {
         if (name == null || name.isEmpty()) {
@@ -20,7 +23,10 @@ public class Item {
     }
 
     /**
+     * Gets a true or false depending if the given object has the same value as this object
      * 
+     * @param object An object that will be compared to, to see if its the same as this object
+     * @return A boolean value 
      */
     @Override
     public boolean equals(Object o) {
@@ -38,7 +44,8 @@ public class Item {
     }
 
     /**
-     * 
+     * Gets the hashcode of this Item
+     * @return An integer that represents the hashcode of this Item
      */
     @Override
     public int hashCode() {
@@ -48,7 +55,8 @@ public class Item {
     }
 
     /**
-     * 
+     * Gets the name of this Item
+     * @return A string that represents the name of this Item
      */
     @Override
     public String toString() {
