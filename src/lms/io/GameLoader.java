@@ -36,6 +36,7 @@ public class GameLoader {
         int producerCount;
         int receiverCount;
         int sectionCount = 1;
+
         String producerName = "something";
         String receiverName = "something";
 
@@ -48,7 +49,6 @@ public class GameLoader {
         HashMap<GridComponent, Coordinate> coordinateFind = new HashMap<>();
         BufferedReader bufferedReader = (BufferedReader) reader;
 
-        String gridLayout = "";
         String section = "";
         String line;
 
@@ -61,22 +61,26 @@ public class GameLoader {
                     section += line;
                 }
             } else {
-                if (sectionCount == 1) {
-                    range = Integer.parseInt(section);
-                    gameGrid = new GameGrid(range);
-                } else if (sectionCount == 2) {
-                    producerCount = Character.getNumericValue(section.charAt(0));
-                    receiverCount = Character.getNumericValue(section.charAt(1));
-                } else if (sectionCount == 3) {
-                    createKeys(section, producerKeys);
-                } else if (sectionCount == 4) {
-                    createKeys(section, receiverKeys);
-                } else if (sectionCount == 5) {
-                    gridLayout = section.replace(" ", "");
-                    section = section.replace(" ", "").replace("w", "").replace("o", "");
-                    createPaths(section, componentPosition, producerKey, receiverKey);
-                    mapGameGrid(gridLayout, componentPosition, range, coordinateFind);
-                } 
+                switch(sectionCount) {
+                    case 1:
+                        range = Integer.parseInt(section);
+                        gameGrid = new GameGrid(range);
+                        break;
+                    case 2:
+                        producerCount = Character.getNumericValue(section.charAt(0));
+                        receiverCount = Character.getNumericValue(section.charAt(1));
+                        break;
+                    case 3:
+                        createKeys(section, producerKeys);
+                        break;
+                    case 4:
+                        createKeys(section, receiverKeys);
+                        break;
+                    case 5: 
+                        createPaths(section, componentPosition, producerKey, receiverKey);
+                        mapGameGrid(section, componentPosition, range, coordinateFind);
+                        break;
+                }
                 section = "";
                 sectionCount ++;
             }
@@ -116,32 +120,16 @@ public class GameLoader {
     private static void createConnections(String section, HashMap<Integer, Path> componentPosition,
             HashMap<GridComponent, Coordinate> coordinateFind) {
         String connections = "";
-        int startID = 0;
-        int endID = 0;
-        
+
         // Finding the GridComponents per line
         for (char character : section.toCharArray()) {
             if (character != ' ') {
                 connections += character;
             } else {
-                int numberEnder = connections.indexOf("-");
-                if (numberEnder == 2) {
-                    startID = Integer.parseInt(connections.substring(0, numberEnder));
-                } else {
-                    startID = Character.getNumericValue(connections.charAt(0));
-                }
+                int startID = findStartID(connections);
                 Path startPath = componentPosition.get(startID);
-                int numberStarter = 0;
-                if (connections.contains(",")) {
-                    numberStarter = connections.indexOf(",") + 1;
-                } else {
-                    numberStarter = connections.indexOf("-") + 1;
-                }
-                if (connections.length() - numberStarter == 2) {
-                    endID = Integer.parseInt(connections.substring(numberStarter, connections.length()));
-                } else {
-                    endID = Character.getNumericValue(connections.charAt(connections.length() - 1));
-                }
+
+                int endID = findEndID(connections);
                 Path endPath = componentPosition.get(endID);
                 Path middlePath;
 
@@ -169,6 +157,45 @@ public class GameLoader {
                 connections = "";
             }
         }
+    }
+
+    /**
+     * Finds the starting ID for each line
+     * 
+     * @param connections A string which shows the ID's the GridComponents have
+     * @return an integer representing the id of the first GridComponent
+     */
+    private static int findStartID(String connections){
+        int startID;
+        int numberEnder = connections.indexOf("-");
+        if (numberEnder == 2) {
+            startID = Integer.parseInt(connections.substring(0, numberEnder));
+        } else {
+            startID = Character.getNumericValue(connections.charAt(0));
+        }
+        return startID;
+    }
+
+    /**
+     * Finds the last ID of a line
+     * 
+     * @param connections A string which shows what ID's the GridComponents have
+     * @return An integer representing the id of the last GridComponent
+     */
+    private static int findEndID(String connections) {
+        int numberStarter = 0;
+        int endID;
+        if (connections.contains(",")) {
+            numberStarter = connections.indexOf(",") + 1;
+        } else {
+            numberStarter = connections.indexOf("-") + 1;
+        }
+        if (connections.length() - numberStarter == 2) {
+            endID = Integer.parseInt(connections.substring(numberStarter, connections.length()));
+        } else {
+            endID = Character.getNumericValue(connections.charAt(connections.length() - 1));
+        }
+        return endID;
     }
 
     /**
@@ -211,6 +238,8 @@ public class GameLoader {
      */
     private static void createPaths(String section, HashMap<Integer, Path> componentPosition, 
             Item producerKey, Item receiverKey) {
+        section = section.replace(" ", "").replace("w", "").replace("o", "");
+        
         for (int count = 0; count < section.length(); count++) {
             switch(section.charAt(count)) {
                 case 'p':
@@ -234,19 +263,22 @@ public class GameLoader {
      * @param range An integer used to calculate the positional values of the grid
      * @param coordinateFind A HashMap which enables us to find the Coordinate of a GridComponent
      */
-    private static void mapGameGrid(String gridLayout, HashMap<Integer, Path> componentPosition, 
+    private static void mapGameGrid(String section, HashMap<Integer, Path> componentPosition, 
             int range, HashMap<GridComponent, Coordinate> coordinateFind) {
+        String gridLayout = section.replace(" ", "");
+        
         Coordinate origin = new Coordinate(0, -range);
-        Coordinate direction = origin;
-        GridComponent gridComponent = () -> "";
         List<Integer> elementsPerRow = rowCalculator(range);
+        GridComponent gridComponent = () -> "";
+        Coordinate direction = origin;
 
         boolean originFound = false;
         int idCounter = 0;
         int rowCounter = 0;
         
-        // Navigating through the Grid and assigning GridComponents with Coordinates
         for (int count = 0; count < gridLayout.length(); count++) {
+
+            // Assigning the correct GridComponent to be mapped
             if (gridLayout.charAt(count) == 'w') {
             gridComponent = () -> "w";
             } else if (gridLayout.charAt(count) == 'o') {
@@ -255,6 +287,8 @@ public class GameLoader {
                 idCounter ++;
                 gridComponent = componentPosition.get(idCounter).getNode();
             }
+
+            // Finding the Coordinate for the GridComponent
             if (originFound == false) {
                 direction = origin;
                 originFound = true;
@@ -280,7 +314,7 @@ public class GameLoader {
     /**
      * Calculates the amount of elements per row using the range
      * 
-     * @param range an integer given from a text file
+     * @param range an integer representing the range of the Grid
      * @return an ArrayList with the amount of elements per row
      */
     private static ArrayList<Integer> rowCalculator(int range) {
