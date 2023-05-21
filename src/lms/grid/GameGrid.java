@@ -19,11 +19,11 @@ public class GameGrid {
     /** An integer used to calculate the size of the grid */
     private int range;
     /** A HashMap which will keep track of each coordinate and the gridcomponent with it */
-    private Map<Coordinate, GridComponent> grid;;
+    private Map<Coordinate, GridComponent> grid;
 
     /**
      * Constructs a new GameGrid
-     * @param range
+     * @param range An integer that determines the size of the GameGrid
      */
     public GameGrid(int range) {
         this.range = range;

@@ -11,12 +11,13 @@ import java.util.function.Consumer;
  * @ass2
  */
 public class Path {
-    /** */
+    /** The node that this Path will hold*/
     private Transport node;
-    /** */
+    /** The Path connected previously to this Path*/
     private Path previous;
-    /** */
+    /** The Path connected next to this Path*/
     private Path next;
+
     /**
      * Constructs a new Path class and copies the node, previous and next of the given Path
      * 
@@ -49,7 +50,7 @@ public class Path {
      * @param node A transport Node that will be set to this Path
      * @param previous A path that is linked to the previous element of this Path
      * @param next A path that is linked to the next element of this Path
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException throws when the node given is null
      */
     public Path(Transport node, Path previous, Path next) throws IllegalArgumentException {
         this.node = node;
@@ -64,7 +65,7 @@ public class Path {
      */
     public Path head() {
         Path holder = this;
-        while(holder.getPrevious() != null) {
+        while (holder.getPrevious() != null) {
             holder = holder.getPrevious();
         }
         return holder;

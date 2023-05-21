@@ -25,16 +25,18 @@ public class Item {
     /**
      * Gets a true or false depending if the given object has the same value as this object
      * 
-     * @param object An object that will be compared to, to see if its the same as this object
+     * @param o An object that will be compared to, to see if its the same as this object
      * @return A boolean value 
      */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
-        } if (o == null) {
+        } 
+        if (o == null) {
             return false;
-        } if (o instanceof Item) {
+        } 
+        if (o instanceof Item) {
             Item test = (Item) o;
             if (test.hashCode() == this.hashCode()) {
                 return true;

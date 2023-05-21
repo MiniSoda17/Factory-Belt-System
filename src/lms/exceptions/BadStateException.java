@@ -11,7 +11,7 @@ public class BadStateException extends RuntimeException {
 
     /** Constructs a BadStateException when a String message is passed 
      * 
-     * @param message
+     * @param message A string that will show when this Exception occurs
     */
     public BadStateException(String message) {
         super(message);
@@ -19,8 +19,8 @@ public class BadStateException extends RuntimeException {
 
     /** Constructs a BadStateException when a String message and Throwable cause is passed 
      * 
-     * @param message
-     * @param cause
+     * @param message A string that will show when this Exception is thrown
+     * @param cause The exception that occured 
     */
     public BadStateException(String message, Throwable cause) {
         super(message, cause);
@@ -28,7 +28,7 @@ public class BadStateException extends RuntimeException {
 
     /** Constructs a BadStateException when a Throwable is passed 
      * 
-     * @param cause
+     * @param cause The exception that occured
     */
     public BadStateException(Throwable cause) {
         super(cause);
