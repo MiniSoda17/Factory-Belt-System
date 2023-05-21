@@ -1,6 +1,7 @@
-package test;
+package test.lms.logistics;
 
-import lms.logistics.*;
+import lms.logistics.Item;
+import lms.logistics.Path;
 import lms.logistics.belts.Belt;
 import lms.logistics.container.Producer;
 import lms.logistics.container.Receiver;

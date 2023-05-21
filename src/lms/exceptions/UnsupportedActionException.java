@@ -16,7 +16,7 @@ public class UnsupportedActionException extends RuntimeException {
 
     /** Constructs an UnsupportedException when a String and a Throwable is passed through */
     public UnsupportedActionException(String message, Throwable cause) {
-        super(message);
+        super(message, cause);
     }
 
     /** Constructs an UnsupportedActionException when a Throwable is passed */

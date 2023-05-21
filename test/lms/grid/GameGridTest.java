@@ -1,4 +1,4 @@
-package test;
+package test.lms.grid;
 
 import org.junit.Test;
 import org.junit.experimental.theories.suppliers.TestedOn;

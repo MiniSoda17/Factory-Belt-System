@@ -2,8 +2,6 @@ package lms.exceptions;
 
 /** A class that represents a FileFormatException */
 public class FileFormatException extends Exception{
-    /** Stores an integer that represents the number of lines */
-    public int lineNum;
 
     /** Constructs a FileFormatException when no argument is passed */
     public FileFormatException() {
@@ -22,10 +20,9 @@ public class FileFormatException extends Exception{
      * @param lineNum An integer that will be stored in this Exception
      */
     public FileFormatException(String message, int lineNum) {
-        super(message);
-        this.lineNum = lineNum;
+        super(String.format("%s (line: %s)", message, lineNum));
     }
-
+    
     /**
      * Constructs a FileFormatException when a String, Integer and Throwable are passed
      * 
@@ -34,8 +31,7 @@ public class FileFormatException extends Exception{
      * @param cause 
      */
     public FileFormatException(String message, int lineNum, Throwable cause) {
-        super(message, cause);
-        this.lineNum = lineNum;
+        super(String.format("%s (line: %s)", message, lineNum), cause);
     }
 
     /**
