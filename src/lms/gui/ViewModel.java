@@ -137,8 +137,6 @@ public class ViewModel {
         centrePanel.setLayout(new BoxLayout(centrePanel, BoxLayout.Y_AXIS));
         addComponents(centrePanel);
 
-
-
         rootPanel.add(centrePanel);
     }
 
@@ -149,7 +147,6 @@ public class ViewModel {
      * @param box The container to which the elements are added.
      */
     private void addComponents(JPanel box) {
-
         /*
          * Add the canvas inside a JPanel, the Panel (canvasContainer) is used so
          * that a border can be added around the canvas and other items can be added later.
@@ -171,6 +168,4 @@ public class ViewModel {
         /* Add everything to the JPanel (which is passed as argument). */
         box.add(canvasContainer);
     }
-
-
 }

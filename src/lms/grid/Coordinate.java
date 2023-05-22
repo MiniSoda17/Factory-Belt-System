@@ -207,7 +207,6 @@ public class Coordinate {
         return new Coordinate(cordQ - vector.cordQ, cordR - vector.cordR, cordS - vector.cordS);
     }
 
-
     /**
      * Returns true if the given Coordinate object is a
      * neighbour of this Coordinate object, false otherwise.
@@ -262,8 +261,4 @@ public class Coordinate {
                 vector.cordS / Math.max(Math.abs(vector.cordS), 1)
         );
     }
-
-
-
-
 }

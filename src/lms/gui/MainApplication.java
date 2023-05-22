@@ -6,7 +6,6 @@ import lms.grid.GameGrid;
 
 import javax.swing.JFrame;
 
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -50,9 +49,8 @@ public class MainApplication {
          * Try and load the save file into gameGrid object
          */
         try {
-
             /* Loads and initialises the gameGrid object from save file data */
-            gameGrid = GameLoader.load(new BufferedReader(new FileReader(save)));
+            gameGrid = GameLoader.load(new FileReader(save));
             
         } catch (IOException e) {
             throw new FileFormatException(e);

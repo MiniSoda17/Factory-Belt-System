@@ -40,7 +40,6 @@ class GraphicsCanvas extends JPanel {
      */
     private Polygon hoverPolygon;
 
-
     /**
      * Hidden Class
      * @provided

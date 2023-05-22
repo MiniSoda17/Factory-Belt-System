@@ -9,7 +9,7 @@ _____ # Items in receiver List
 key2
 key1
 _____ # map layout
-    w w w w
+    w w w w 
    w b b b b
   b b p w w b
  b w b w b b o

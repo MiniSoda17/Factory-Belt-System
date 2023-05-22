@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import java.io.BufferedReader;
+import java.io.File;
 
 /** A class that represents a GameLoader */
 public class GameLoader {
@@ -33,22 +34,26 @@ public class GameLoader {
      * @throws FileFormatException when the file cannot be read
      */
     public static GameGrid load(Reader reader) throws IOException, FileFormatException {
+        if (reader == null) {
+            throw new NullPointerException();
+        }
+        
         int range = 0;
-        int producerCount;
-        int receiverCount;
+        int producerCount = 0;
+        int receiverCount = 0;
         int sectionCount = 1;
 
-        String producerName = "something";
-        String receiverName = "something";
+        String producerName = "name";
+        String receiverName = "name";
 
         Item producerKey = new Item(producerName);
         Item receiverKey = new Item(receiverName);
         List<Item> producerKeys = new ArrayList<>();
         List<Item> receiverKeys = new ArrayList<>();
 
+        BufferedReader bufferedReader = new BufferedReader(reader);
         HashMap<Integer, Path> componentPosition = new HashMap<>();
         HashMap<GridComponent, Coordinate> coordinateFind = new HashMap<>();
-        BufferedReader bufferedReader = (BufferedReader) reader;
 
         String section = "";
         String line;
@@ -62,6 +67,7 @@ public class GameLoader {
                     section += line;
                 }
             } else {
+                satisfactoryLineCount(line);
                 switch (sectionCount) {
                     case 1:
                         range = Integer.parseInt(section);
@@ -86,9 +92,57 @@ public class GameLoader {
                 sectionCount++;
             }
         }
+        producerAndReceiverMatch(componentPosition, producerCount, receiverCount);
         createConnections(section, componentPosition, coordinateFind);
         bufferedReader.close();
         return gameGrid;
+    }
+
+    /**
+     * Checks to see that the number of producers and receivers is the same as the given number from
+     * the text file
+     * 
+     * @param componentPosition A HashMap containing all the positions of the GridComponents
+     * @param producerCount The number of Producers listed in the text file
+     * @param receiverCount The number of Receivers listed in the text file
+     * @throws FileFormatException throws if the number of actual producers/receivers is different
+     * the number given from the text file
+     */
+    private static void producerAndReceiverMatch(HashMap<Integer, Path> componentPosition, 
+            int producerCount, int receiverCount) throws FileFormatException {
+        var entrySet = componentPosition.entrySet();
+        int actualProducerCount = 0;
+        int actualReceiverCount = 0;
+        for (var entry : entrySet) {
+            if (entry.getValue().getNode() instanceof Producer) {
+                actualProducerCount++;
+            }
+            if (entry.getValue().getNode() instanceof Receiver) {
+                actualReceiverCount++;
+            }
+        }
+        if (actualProducerCount != producerCount || actualReceiverCount != receiverCount) {
+            throw new FileFormatException();
+        }
+    }
+
+    /**
+     * Checks to see if there is a satisfactory amount of underscores for the section separator
+     * 
+     * @param line A String that contains the section separators
+     * @throws FileFormatException throws when there is less than 5 underscores in a separator
+     */
+    private static void satisfactoryLineCount(String line) throws FileFormatException {
+        int requiredUnderscores = 5;
+        int underscoreCount = 0;
+        for (char character : line.toCharArray()) {
+            if (character == '_') {
+                underscoreCount++;
+            }
+        }
+        if (underscoreCount < requiredUnderscores) {
+            throw new FileFormatException();
+        }
     }
 
     /**
@@ -103,6 +157,8 @@ public class GameLoader {
         if (section.contains("key")) {
             nameLength = 4;
         }
+
+        // Adds the new items to a list
         for (int count = 1; count <= section.length(); count++) {
             if (count % nameLength == 0) {
                 itemName = section.substring(count - nameLength, count);
@@ -117,9 +173,10 @@ public class GameLoader {
      * @param section A String which represents what connections need to be made
      * @param componentPosition A HashMap which links all the GridComponents with their id
      * @param coordinateFind Helps to find Coordinate of specific GridComponents
+     * @throws FileFormatException Throws when a producer and receiver are connecting together
      */
     private static void createConnections(String section, HashMap<Integer, Path> componentPosition,
-            HashMap<GridComponent, Coordinate> coordinateFind) {
+            HashMap<GridComponent, Coordinate> coordinateFind) throws FileFormatException {
         String connections = "";
 
         // Finding the GridComponents per line
@@ -146,6 +203,7 @@ public class GameLoader {
                             middleId = Character.getNumericValue(connections.charAt(connections
                                     .indexOf("-") + 1));
                         }
+                        producerReceiverCheck(startPath);
                         middlePath = componentPosition.get(middleId);
                         addBackwardsConnection(coordinateFind, startPath, middlePath);
                     } 
@@ -159,6 +217,17 @@ public class GameLoader {
                 }
                 connections = "";
             }
+        }
+    }
+
+    /**
+     * Checks to see if that path instance passsed through is either a Producer or a Receiver
+     * @param path A path to be tested for its instance
+     * @throws FileFormatException throws if that Path given is a Producer or Receiver
+     */
+    private static void producerReceiverCheck(Path path) throws FileFormatException {
+        if (path.getNode() instanceof Producer || path.getNode() instanceof Receiver) {
+            throw new FileFormatException();
         }
     }
 
@@ -207,14 +276,17 @@ public class GameLoader {
      * @param startPath the Path that contains the Transport Node to be connected
      * @param endPath the second Path that contains the Transport Node to be connected
      * @param coordinateFind A hashmap containing the coordinate of each Transport Node
+     * @throws FileFormatException throws when a producer is connecting to a receiver
      */
     private static void addForwardConnection(HashMap<GridComponent, Coordinate> coordinateFind, 
-            Path startPath, Path endPath) {
+            Path startPath, Path endPath) throws FileFormatException {
         Transport startTransport = (Transport) gameGrid.getGrid().get(coordinateFind
                 .get(startPath.getNode()));
         Transport endTransport = (Transport) gameGrid.getGrid().get(coordinateFind
                 .get(endPath.getNode()));
-
+        if (startTransport instanceof Producer && endTransport instanceof Receiver) {
+            throw new FileFormatException();
+        }
         startTransport.setOutput(endTransport.getPath());
         endTransport.setInput(startTransport.getPath());
     }
@@ -227,14 +299,16 @@ public class GameLoader {
      * @param coordinateFind A hashmap containing the coordinate of each Transport Node
      */
     private static void addBackwardsConnection(HashMap<GridComponent, Coordinate> coordinateFind, 
-            Path startPath, Path endPath) {
-        Transport startComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath
+            Path startPath, Path endPath) throws FileFormatException {
+        Transport startTransport = (Transport) gameGrid.getGrid().get(coordinateFind.get(startPath
                 .getNode()));
-        Transport endComponent = (Transport) gameGrid.getGrid().get(coordinateFind.get(endPath
+        Transport endTransport = (Transport) gameGrid.getGrid().get(coordinateFind.get(endPath
                 .getNode()));
-
-        startComponent.setInput(endComponent.getPath());
-        endComponent.setOutput(startComponent.getPath());
+        if (startTransport instanceof Receiver && endTransport instanceof Producer) {
+            throw new FileFormatException();
+        }
+        startTransport.setInput(endTransport.getPath());
+        endTransport.setOutput(startTransport.getPath());
     }
 
     /**
@@ -246,7 +320,7 @@ public class GameLoader {
      * @param receiverKey An item for the Receiver to be the key
      */
     private static void createPaths(String section, HashMap<Integer, Path> componentPosition, 
-            Item producerKey, Item receiverKey) {
+            Item producerKey, Item receiverKey) throws FileFormatException {
         // Removing unnecessary whitespace and parts that are not Transport Nodes
         section = section.replace(" ", "").replace("w", "")
                 .replace("o", "");
@@ -265,6 +339,8 @@ public class GameLoader {
                 case 'b':
                     componentPosition.put(count + 1, new Path(new Belt(count + 1)));
                     break;
+                default:
+                    throw new FileFormatException();
             }
         }
     }
@@ -276,12 +352,15 @@ public class GameLoader {
      * @param componentPosition A hashmap containing the the positional id of each GridComponent
      * @param range An integer used to calculate the positional values of the grid
      * @param coordinateFind A HashMap which enables us to find the Coordinate of a GridComponent
+     * @throws FileFormatException throws when there are two many elements than intended
      */
     private static void mapGameGrid(String section, HashMap<Integer, Path> componentPosition, 
-            int range, HashMap<GridComponent, Coordinate> coordinateFind) {
+            int range, HashMap<GridComponent, Coordinate> coordinateFind) 
+            throws FileFormatException {
         String gridLayout = section.replace(" ", "");
         
-        Coordinate origin = new Coordinate(0, -range);
+        int originNumber = 0;
+        Coordinate origin = new Coordinate(originNumber, -range);
         List<Integer> elementsPerRow = rowCalculator(range);
         GridComponent gridComponent = () -> "";
         Coordinate direction = origin;
@@ -291,7 +370,6 @@ public class GameLoader {
         int rowCounter = 0;
         
         for (int count = 0; count < gridLayout.length(); count++) {
-
             // Assigning the correct GridComponent to be mapped
             if (gridLayout.charAt(count) == 'w') {
                 gridComponent = () -> "w";
@@ -318,6 +396,9 @@ public class GameLoader {
                     direction = origin;
                     rowCounter++;
                 }
+            }
+            if (rowCounter == (range * 2) + 1) {
+                throw new FileFormatException();
             }
             coordinateFind.put(gridComponent, direction);
             gameGrid.setCoordinate(direction, gridComponent);

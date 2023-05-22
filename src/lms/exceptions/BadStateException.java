@@ -32,9 +32,5 @@ public class BadStateException extends RuntimeException {
     */
     public BadStateException(Throwable cause) {
         super(cause);
-
     }
-
-
-    
 }

@@ -69,19 +69,28 @@ public class GameGridTest {
 
     @Test
     public void getGridTest1() {
-        Map<Coordinate, GridComponent> gridCopy = new HashMap<>(gameGrid1.getGrid());
-        assertEquals(gridCopy, gameGrid1.getGrid());
+        Map<Coordinate, GridComponent> gridCopy = gameGrid1.getGrid();
+        Coordinate coordinate = new Coordinate(0, -1);
+        GridComponent gridComponent = new Belt(5);
+        gridCopy.put(coordinate, gridComponent);
+        assertNotEquals(gameGrid1.getGrid(), gridCopy);
     }
-
+    
     @Test
     public void getGridTest2() {
-        Map<Coordinate, GridComponent> gridCopy = new HashMap<>(gameGrid2.getGrid());
-        assertEquals(gridCopy, gameGrid2.getGrid());
+        Map<Coordinate, GridComponent> gridCopy = gameGrid2.getGrid();
+        Coordinate coordinate = new Coordinate(0, -1);
+        GridComponent gridComponent = new Belt(2);
+        gridCopy.put(coordinate, gridComponent);
+        assertEquals(1, gameGrid2.getGrid().size());
     }
 
     @Test
     public void getGridTest3() {
-        Map<Coordinate, GridComponent> gridCopy = new HashMap<>(gameGrid3.getGrid());
-        assertEquals(gridCopy, gameGrid3.getGrid());
+        Map<Coordinate, GridComponent> gridCopy = gameGrid3.getGrid();
+        Coordinate coordinate = new Coordinate(1, -1);
+        GridComponent gridComponent = new Belt(7);
+        gridCopy.put(coordinate, gridComponent);
+        assertNotEquals(gameGrid3.getGrid(), gridCopy);
     }
 }

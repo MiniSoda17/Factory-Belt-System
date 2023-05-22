@@ -36,5 +36,4 @@ public class UnsupportedActionException extends RuntimeException {
     public UnsupportedActionException(Throwable cause) {
         super(cause);
     }
-    
 }

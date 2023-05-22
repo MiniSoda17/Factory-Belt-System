@@ -23,7 +23,10 @@ public class Path {
      * 
      * @param path The path to be copied 
      */
-    public Path(Path path) {
+    public Path(Path path) throws IllegalArgumentException {
+        if (path == null) {
+            throw new IllegalArgumentException();
+        }
         this.node = path.getNode();
         this.previous = path.getPrevious();
         this.next = path.getNext();
