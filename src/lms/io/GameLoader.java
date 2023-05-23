@@ -40,10 +40,12 @@ public class GameLoader {
         int range = 0;
         int producerCount = 0;
         int receiverCount = 0;
+        int producerKeyCount = 0;
+        int receiverKeyCount = 0;
         int sectionCount = 1;
 
-        String producerName = "name";
-        String receiverName = "name";
+        String producerName = "producer";
+        String receiverName = "receiver";
 
         Item producerKey = new Item(producerName);
         Item receiverKey = new Item(receiverName);
@@ -91,9 +93,10 @@ public class GameLoader {
                 sectionCount++;
             }
         }
-        producerAndReceiverMatch(componentPosition, producerCount, receiverCount);
+        // Reads Section 6 of the text file
         createConnections(section, componentPosition, coordinateFind);
-        bufferedReader.close();
+        producerAndReceiverMatch(componentPosition, producerCount, receiverCount);
+        sameItemNameCheck(componentPosition);
         return gameGrid;
     }
 
@@ -219,8 +222,26 @@ public class GameLoader {
         }
     }
 
+    private static void sameItemNameCheck(HashMap<Integer, Path> componentPosition) {
+        
+        var entryset = gameGrid.getGrid().entrySet();
+        for (var entry : entryset) {
+            if (entry.getValue() instanceof Producer) {
+                Producer producer = (Producer) entry.getValue();
+                Path producerPath = producer.getPath();
+                Path receiverPath = producerPath.tail();
+                Receiver receiver = (Receiver) receiverPath.getNode();
+                System.out.println(producer.getKey());
+                System.out.println(receiver.getKey());
+
+            }
+        }
+            
+    }
+
     /**
      * Checks to see if that path instance passsed through is either a Producer or a Receiver
+     * 
      * @param path A path to be tested for its instance
      * @throws FileFormatException throws if that Path given is a Producer or Receiver
      */
@@ -329,6 +350,7 @@ public class GameLoader {
         section = section.replace(" ", "").replace("w", "")
                 .replace("o", "");
         
+        
         // Creates different components depending on what is in the section
         for (int count = 0; count < section.length(); count++) {
             switch (section.charAt(count)) {
@@ -363,15 +385,15 @@ public class GameLoader {
             throws FileFormatException {
         String gridLayout = section.replace(" ", "");
         
+        boolean originFound = false;
         int originNumber = 0;
+        int idCounter = 0;
+        int rowCounter = 0;
+
         Coordinate origin = new Coordinate(originNumber, -range);
         List<Integer> elementsPerRow = rowCalculator(range);
         GridComponent gridComponent = () -> "";
         Coordinate direction = origin;
-
-        boolean originFound = false;
-        int idCounter = 0;
-        int rowCounter = 0;
 
         for (int count = 0; count < gridLayout.length(); count++) {
 
