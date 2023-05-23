@@ -40,6 +40,7 @@ public class FileFormatException extends Exception {
 
     /**
      * Constructs a FileFormatException when a String and Throwable are passed
+     * 
      * @param message A string that will be displayed
      * @param cause A throwable that occurred during an operation
      */

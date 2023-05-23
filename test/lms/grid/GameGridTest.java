@@ -1,17 +1,14 @@
 package test.lms.grid;
 
 import org.junit.Test;
-import org.junit.experimental.theories.suppliers.TestedOn;
 
 import lms.grid.Coordinate;
 import lms.grid.GameGrid;
 import lms.grid.GridComponent;
-import lms.logistics.Transport;
 import lms.logistics.belts.Belt;
 
 import static org.junit.Assert.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;

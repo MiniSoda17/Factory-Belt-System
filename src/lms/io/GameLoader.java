@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import java.io.BufferedReader;
-import java.io.File;
 
 /** A class that represents a GameLoader */
 public class GameLoader {
@@ -29,8 +28,8 @@ public class GameLoader {
      * Parses through a text file and converts it to a GameGrid
      * 
      * @param reader The text file to be read through
-     * @return A GameGrid
-     * @throws IOException Thrown when
+     * @return A GameGrid with fully implemented GridComponents
+     * @throws IOException Thrown when there is trouble reading the file
      * @throws FileFormatException when the file cannot be read
      */
     public static GameGrid load(Reader reader) throws IOException, FileFormatException {
@@ -262,6 +261,8 @@ public class GameLoader {
         } else {
             numberStarter = connections.indexOf("-") + 1;
         }
+        
+        // Creates connection depending if the id is double digits or not
         if (connections.length() - numberStarter == 2) {
             endId = Integer.parseInt(connections.substring(numberStarter, connections.length()));
         } else {
@@ -276,7 +277,7 @@ public class GameLoader {
      * @param startPath the Path that contains the Transport Node to be connected
      * @param endPath the second Path that contains the Transport Node to be connected
      * @param coordinateFind A hashmap containing the coordinate of each Transport Node
-     * @throws FileFormatException throws when a producer is connecting to a receiver
+     * @throws FileFormatException throws when a Producer is connecting to a Receiver
      */
     private static void addForwardConnection(HashMap<GridComponent, Coordinate> coordinateFind, 
             Path startPath, Path endPath) throws FileFormatException {
@@ -284,6 +285,7 @@ public class GameLoader {
                 .get(startPath.getNode()));
         Transport endTransport = (Transport) gameGrid.getGrid().get(coordinateFind
                 .get(endPath.getNode()));
+
         if (startTransport instanceof Producer && endTransport instanceof Receiver) {
             throw new FileFormatException();
         }
@@ -297,6 +299,7 @@ public class GameLoader {
      * @param startPath the Path that contains the Transport Node to be connected
      * @param endPath the second Path that contains the Transport Node to be connected
      * @param coordinateFind A hashmap containing the coordinate of each Transport Node
+     * @throws FileFormatException throws when a Receiver is connecting to a Producer
      */
     private static void addBackwardsConnection(HashMap<GridComponent, Coordinate> coordinateFind, 
             Path startPath, Path endPath) throws FileFormatException {
@@ -304,6 +307,7 @@ public class GameLoader {
                 .getNode()));
         Transport endTransport = (Transport) gameGrid.getGrid().get(coordinateFind.get(endPath
                 .getNode()));
+
         if (startTransport instanceof Receiver && endTransport instanceof Producer) {
             throw new FileFormatException();
         }
@@ -368,8 +372,9 @@ public class GameLoader {
         boolean originFound = false;
         int idCounter = 0;
         int rowCounter = 0;
-        
+
         for (int count = 0; count < gridLayout.length(); count++) {
+
             // Assigning the correct GridComponent to be mapped
             if (gridLayout.charAt(count) == 'w') {
                 gridComponent = () -> "w";
@@ -397,6 +402,7 @@ public class GameLoader {
                     rowCounter++;
                 }
             }
+            // Makes sure there is the correct number of elements per row
             if (rowCounter == (range * 2) + 1) {
                 throw new FileFormatException();
             }
@@ -414,6 +420,7 @@ public class GameLoader {
      */
     private static ArrayList<Integer> rowCalculator(int range) {
         ArrayList<Integer> elementsPerRow = new ArrayList<>();
+
         int gridLength = range * 2 + 1;
         int countPerRow = range;
         int middleRow = range + 1;
